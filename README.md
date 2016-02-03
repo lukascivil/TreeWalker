@@ -15,8 +15,8 @@ TreeWalker is a simple and smal API in php
     include "../src/treeWalker.php";
 
       $treeWalker = new treeWalker(array(
-        "debug"=>true, //true => return the execution time, false => not
-        "returntype"=>"jsonstring") //Returntype = ["obj","jsonstring","array"]
+        "debug"=>true,                      //true => return the execution time, false => not
+        "returntype"=>"jsonstring")         //Returntype = ["obj","jsonstring","array"]
       );
 
 Methods:
@@ -39,12 +39,12 @@ Methods:
         },
         edited: {
             casa: {
-            oldvalue: 2,
-            newvalue: 1
+              oldvalue: 2,
+              newvalue: 1
             },
             cafeina/ss: {
-            oldvalue: "dddd",
-            newvalue: "ddd"
+              oldvalue: "dddd",
+              newvalue: "ddd"
             }
         },
         time: 0
