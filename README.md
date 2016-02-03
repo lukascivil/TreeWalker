@@ -10,9 +10,9 @@ TreeWalker is a simple and smal API in php
 
 ### Examples
 
-(Init):
+Init:
 
-    include "../src/treeWalker.php";
+    include "treeWalker.php";
 
       $treeWalker = new treeWalker(array(
         "debug"=>true,                      //true => return the execution time, false => not
