@@ -8,15 +8,7 @@ TreeWalker is a simple and smal API in php
 ### Version
 0.1
 
-### Development
-
-Want to contribute? Great!
-
-Dillinger uses Gulp + Webpack for fast developing.
-Make a change in your file and instantanously see your updates!
-
-Open your favorite Terminal and run these commands.
-
+### Examples
 
 (Init):
 
@@ -27,7 +19,7 @@ Open your favorite Terminal and run these commands.
         "returntype"=>"jsonstring") //Returntype = ["obj","jsonstring","array"]
       );
 
-Examples:
+Methods:
 ```sh
     //getdiff() - this method will return the diference between json1 and json2
     
