@@ -27,9 +27,10 @@ Open your favorite Terminal and run these commands.
         "returntype"=>"jsonstring") //Returntype = ["obj","jsonstring","array"]
       );
 
-Methods:
+Examples:
 ```sh
-    //this method will return the diference between json1 and json2
+    //getdiff() - this method will return the diference between json1 and json2
+    
     $struct1 = array("casa"=>1, "b"=>"5", "cafeina"=>array("ss"=>"ddd"), "oi"=>5);
     $struct2 = array("casa"=>2, "cafeina"=>array("ss"=>"dddd"), "oi2"=>5);
 
@@ -57,11 +58,10 @@ Methods:
         time: 0
     }
 
-    $treeWalker->replaceValues($struct2, "cafedeteste", "Unit_Specifications", false)
 ```
 
-```
-    //this method will walk in tree recursively, you can change so values passing the field name
+```sh
+    //replaceValues - this method will walk in tree recursively, you can change so values passing the field name
     $struct1 = array("casa"=>1, "b"=>"5", "cafeina"=>array("ss"=>"ddd"), "oi"=>5);
     $struct2 = array("casa"=>2, "cafeina"=>array("ss"=>"dddd"), "oi2"=>5);
 
