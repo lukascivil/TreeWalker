@@ -2,8 +2,8 @@
 
 TreeWalker is a simple and smal API in php
 
-  - get json difference
-  - edit jsons value automatized
+  - Get json difference
+  - Edit json value (Recursively)
 
 ### Version
 0.1
@@ -62,6 +62,7 @@ Examples:
 
 ```sh
     //replaceValues - this method will walk in tree recursively, you can change so values passing the field name
+    
     $struct1 = array("casa"=>1, "b"=>"5", "cafeina"=>array("ss"=>"ddd"), "oi"=>5);
     $struct2 = array("casa"=>2, "cafeina"=>array("ss"=>"dddd"), "oi2"=>5);
 
