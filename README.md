@@ -53,7 +53,7 @@ Methods:
 ```
 
 ```sh
-    //replaceValues - this method will walk in tree recursively, you can change so values passing the field name
+    //replaceValues() - this method will walk in tree recursively, you can change so values passing the field name
     
     $struct1 = array("casa"=>1, "b"=>"5", "cafeina"=>array("ss"=>"ddd"), "oi"=>5);
     $struct2 = array("casa"=>2, "cafeina"=>array("ss"=>"dddd"), "oi2"=>5);
@@ -68,6 +68,36 @@ Methods:
         },
         oi2: 5,
         time: 0
+    }
+```
+
+```sh
+    //createDynamicallyObjects() - this method will create nested objects with with dynamic keys
+    
+    $struct1 = array("casa"=>1, "b"=>"5", "cafeina"=>array("ss"=>"ddd"), "oi"=>5, "1" => "255");
+
+    //P.s
+    $treeWalker->createDynamicallyObjects($struct1, array(1,2,5,9,10,11));
+    print_r($struct1);
+    
+   {
+     "casa": 1,
+     "b": "5",
+     "cafeina": {
+        "ss": "ddd"
+     },
+     "oi": 5,
+     "1": {
+        "2": {
+          "5": {
+            "9": {
+              "10": {
+                "11": {}
+              }
+            }
+          }
+        }
+      }
     }
 ```
 
