@@ -3,8 +3,8 @@
 TreeWalker is a simple and smal API in php
 
   - getdiff() - Get json difference
-  - replaceValues() -Edit json value (Recursively)
-  - createDynamicallyObjects() -Create nested Objects by Dynamic keys
+  - replaceValues() - Edit json value (Recursively)
+  - createDynamicallyObjects() - Create nested Objects by Dynamic keys
 
 ### Version
 0.2
