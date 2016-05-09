@@ -72,8 +72,9 @@
             for($i = 0 ; $i < count($keypath_array) ; $i++) {
                 $key = $keypath_array[$i];
                 $path_string .= $key."/";
-                $this->accesDynamically($path_string, $struct1);
             }
+            
+            $this->accesDynamically($path_string, $struct1);
             $this->returnTypeConvert($struct1);
         }
 
