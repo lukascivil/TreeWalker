@@ -41,19 +41,34 @@
         }
 
         /*
-            accesDynamically((String) : Path,
-                            (Array) : Current array
+            getDynamicallyValue((object, Jsonstring, Array) : Structure,
+                            (Array) : Array with the keys to access dynamically
             )
         */
-        private function accesDynamically($path_string, &$array) {
-            $keys = explode('/', substr_replace($path_string, "", -1));
-            $ref = &$array;
-
-            while ($key = array_shift($keys)) {
-                $ref = &$ref[$key];
+        public function getDynamicallyValue($struct1, $keypath_array) {
+            if(!$this->studytype($struct1, $problem)) {
+                return $problem;
             }
-            $ref = array();
+            
+            $value = $this->getDynamically($struct1, $keypath_array);
+            return $this->returnTypeConvert($value);
         }
+
+		private function getDynamically($struct_assocarray, $keypath_array) {
+			if(empty($keypath_array)) { // -> Stop Recursion
+				return $struct_assocarray;
+			}
+
+			$key = array_shift($keypath_array);
+
+			if(is_array($struct_assocarray)) {
+				if(array_key_exists($key, $struct_assocarray)) {
+					return getDynamically($struct_assocarray[$key], $keypath_array);
+				}else{
+					return '{"error": "Error, some key does not exist!"}';
+				}
+			}
+		}
 
         /*
             createDynamicallyObjects((object, Jsonstring, Array) : Structure,
@@ -74,8 +89,23 @@
                 $path_string .= $key."/";
             }
             
-            $this->accesDynamically($path_string, $struct1);
+            $this->accessDynamically($path_string, $struct1);
             $this->returnTypeConvert($struct1);
+        }
+
+        /*
+            accessDynamically((String) : Path,
+                            (Array) : Current array
+            )
+        */
+        private function accessDynamically($path_string, &$array) {
+            $keys = explode('/', substr_replace($path_string, "", -1));
+            $ref = &$array;
+
+            while ($key = array_shift($keys)) {
+                $ref = &$ref[$key];
+            }
+            $ref = array();
         }
 
         public function replaceValues($struct1, $newvalue, $field, $onlyseed) {
