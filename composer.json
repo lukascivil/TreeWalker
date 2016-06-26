@@ -1,0 +1,13 @@
+{
+    "name": "lukascivil/treeWalker",
+    "description": "TreeWalker is a simple and smal API in php that will help you to work with Objects in php",
+    "keywords": ["JSON","objects","diff"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "lucas cordeiro da Silva",
+            "email": "lukas_civil@hotmail.com"
+        }
+    ],
+    "require": {}
+}
