@@ -10,11 +10,32 @@ TreeWalker is a simple and smal API in php
 ### Version
 0.3
 
+## Installation
+
+### Using composer
+
+Put the require statement for `treeWalker` in your `composer.json` and install:
+
+```json
+{
+    "require": {
+        "lukascivil/treewalker": "dev-master"
+    }
+}
+```
+
+### Manually
+
+include the `treeWalker.php`
+
+```php
+<?php
+include 'pathto/treeWalker.php';
+```
+
 ### Examples
 
 Init:
-
-    include "treeWalker.php";
 
       $treeWalker = new treeWalker(array(
         "debug"=>true,                      //true => return the execution time, false => not
@@ -55,7 +76,7 @@ Methods:
 ```
 
 ```sh
-    //replaceValues() - this method will walk in tree recursively, you can change so values passing the field name
+    //replaceValues() - this method will walk in tree recursively, you can change the values passing the field name
     
     $struct1 = array("casa"=>1, "b"=>"5", "cafeina"=>array("ss"=>"ddd"), "oi"=>5);
     $struct2 = array("casa"=>2, "cafeina"=>array("ss"=>"dddd"), "oi2"=>5);
