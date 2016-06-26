@@ -9,5 +9,10 @@
             "email": "lukas_civil@hotmail.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "lukascivil\\treewalker\\": ""
+        }
+    }
 }
