@@ -1,6 +1,6 @@
-# treeWalker
+# TreeWalker
 
-treeWalker is a simple and smal API in php
+TreeWalker is a simple and smal API in php
 
   - getdiff() - Get json difference
   - replaceValues() - Edit json value (Recursively)
@@ -14,7 +14,7 @@ treeWalker is a simple and smal API in php
 
 ### Using composer
 
-Put the require statement for `treeWalker` in your `composer.json` and install:
+Put the require statement for `TreeWalker` in your `composer.json` and install:
 
 ```json
 {
@@ -26,18 +26,18 @@ Put the require statement for `treeWalker` in your `composer.json` and install:
 
 ### Manually
 
-include the `treeWalker.php`
+include the `TreeWalker.php`
 
 ```php
 <?php
-include 'pathto/treeWalker.php';
+include 'pathto/TreeWalker.php';
 ```
 
 ### Examples
 
 Init:
 
-      $treeWalker = new treeWalker(array(
+      $treewalker = new TreeWalker(array(
         "debug"=>true,                      //true => return the execution time, false => not
         "returntype"=>"jsonstring")         //Returntype = ["obj","jsonstring","array"]
       );
@@ -50,7 +50,7 @@ Methods:
     $struct2 = array("casa"=>2, "cafeina"=>array("ss"=>"dddd"), "oi2"=>5);
 
     //P.s
-    print_r($treeWalker->getdiff($struct1, $struct2))
+    print_r($treewalker->getdiff($struct1, $struct2))
 
     {
         new: {
@@ -82,7 +82,7 @@ Methods:
     $struct2 = array("casa"=>2, "cafeina"=>array("ss"=>"dddd"), "oi2"=>5);
 
     //P.s
-    print_r($treeWalker->replaceValues($struct2, "test", "ss", false));
+    print_r($treewalker->replaceValues($struct2, "test", "ss", false));
     
     {
         casa: 2,
@@ -100,7 +100,7 @@ Methods:
     $struct1 = array("casa"=>1, "b"=>"5", "cafeina"=>array("ss"=>"ddd"), "oi"=>5, "1" => "255");
 
     //P.s
-    $treeWalker->createDynamicallyObjects($struct1, array(1,2,5,9,10,11));
+    $treewalker->createDynamicallyObjects($struct1, array(1,2,5,9,10,11));
     print_r($struct1);
     
    {
