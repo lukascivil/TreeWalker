@@ -1,6 +1,6 @@
 # treeWalker
 
-TreeWalker is a simple and smal API in php
+treeWalker is a simple and smal API in php
 
   - getdiff() - Get json difference
   - replaceValues() - Edit json value (Recursively)
