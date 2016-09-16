@@ -171,6 +171,8 @@ class TreeWalker
 
                     if (gettype($assocarray[$key]) == "array") {
                         $this->structPathArray($assocarray[$key], $array, $path);
+                    } elseif (gettype($assocarray[$key]) == "object") {
+                        $this->structPathArray((arrary)$assocarray[$key], $array, $path);
                     } else {
                         if ($path != "") {
                             //Lógica 1
