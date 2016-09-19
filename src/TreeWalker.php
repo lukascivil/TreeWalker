@@ -26,36 +26,37 @@ SOFTWARE.
 
 class TreeWalker
 {
+    private $config = array(
+        "debug" => false,
+        "returntype" => "jsonstring"
+    );
 
-    private $debug = false;
-    private $returnType = "jsonstring";
+    private $time_start = 0;
+    private $time_end = 0;
 
+    /**
+     * [__construct Class]
+     * @param [array] $config [associative array configuration]
+     */
     public function __construct($config)
     {
-
         $config = array_change_key_case($config, CASE_LOWER);
 
-        if (isset($config["debug"])) {
-            $this->debug = $config["debug"];
-        }
-
-        if ($config["returntype"]) {
-            $this->returnType = strtolower($config["returntype"]);
-        }
+        $this->config = array_merge($this->config, $config);
     }
 
     /**
-     * @param \stdClass|string|array $struct1 Structure
-     * @param array                  $keypath_array Array with the keys to access dynamically
-     * @return string
+     * @param  [\stdClass|string|array] $struct         [Structure]
+     * @param  [array]                  $keypath_array  [Array with the keys to access dynamically]
+     * @return [string]
      */
-    public function getDynamicallyValue($struct1, $keypath_array)
+    public function getDynamicallyValue($struct, $keypath_array)
     {
-        if (!$this->studytype($struct1, $problem)) {
+        if (!$this->studyType($struct, $problem)) {
             return $problem;
         }
 
-        $value = $this->getDynamically($struct1, $keypath_array);
+        $value = $this->getDynamically($struct, $keypath_array);
         return $this->returnTypeConvert($value);
     }
 
@@ -83,9 +84,9 @@ class TreeWalker
      * @param array                  $keypath_array Array with the keys that will be created
      * @return array|string|\stdClass
      */
-    public function createDynamicallyObjects(&$struct1, $keypath_array)
+    public function createDynamicallyObjects($struct, $keypath_array)
     {
-        if (!$this->studytype($struct1, $problem)) {
+        if (!$this->studyType($struct, $problem)) {
             return $problem;
         }
 
@@ -96,13 +97,14 @@ class TreeWalker
             $path_string .= $key . "/";
         }
 
-        $this->accessDynamically($path_string, $struct1);
-        $this->returnTypeConvert($struct1);
+        $this->accessDynamically($path_string, $struct);
+        return $this->returnTypeConvert($struct);
     }
 
     /**
-     * @param string $path_string path
-     * @param array  $array current array
+     * This function enables you to dynamically access the value of a structure
+     * @param [string] $path_string   [path]
+     * @param [array]  $array current [array]
      */
     private function accessDynamically($path_string, &$array)
     {
@@ -115,48 +117,68 @@ class TreeWalker
         $ref = array();
     }
 
-    public function replaceValues($struct1, $newvalue, $field, $onlyseed)
+    /**
+     * changes the value of a node of a structure from a key passed as a parameter . This node may be a leaf or not.
+     * @param  [array|string|\stdClass]         $struct  [structure]
+     * @param  [array|string|boolean|int|float] $newvalue [new value to replace]
+     * @param  [int|string]                     $field    [key]
+     * @param  [boolean]                        $onlyleaf [leaf or not]
+     * @return [array|string|\stdClass]                   [description]
+     */
+    public function replaceValues($struct, $newvalue, $field, $onlyleaf)
     {
-        if (!$this->studytype($struct1, $problem)) {
+        if (!$this->studyType($struct, $problem)) {
             return $problem;
         }
-        $time_start = microtime(true);
+        
+        $this->clockStart();
 
-        $replaced_array = $this->replaceWalker($struct1, $newvalue, $field, $onlyseed);
+        $replaced_array = $this->replaceWalker($struct, $newvalue, $field, $onlyleaf);
 
-        if ($this->debug) {
-            $time_end = microtime(true);
-            $time = $time_end - $time_start;
-            $replaced_array["time"] = $time;
+        if ($this->config["debug"]) {
+            $replaced_array["time"] = $this->clockMark();
         }
 
-        $this->returnTypeConvert($replaced_array);
-
-        return $replaced_array;
+        return $this->returnTypeConvert($replaced_array);
     }
 
+    /**
+     * Returns the difference between two structures
+     * @param  [array|string|\stdClass] $struct1 [struct1]
+     * @param  [array|string|\stdClass] $struct2 [struct2]
+     * @return [array|string|\stdClass] struct diff
+     */
     public function getdiff($struct1, $struct2)
     {
-
-        if (!$this->studytype($struct1, $problem) || !$this->studytype($struct2, $problem)) {
+        if (!$this->studyType($struct1, $problem) || !$this->studyType($struct2, $problem)) {
             return $problem;
         }
 
-        $time_start = microtime(true);
+        $this->clockStart();
+
+        $structpath1_array = array();
+        $structpath2_array = array();
+
         $this->structPathArray($struct1, $structpath1_array, "");
         $this->structPathArray($struct2, $structpath2_array, "");
-        $this->structPathArrayDiff($structpath1_array, $structpath2_array, $deltadiff_array);
+        $deltadiff_array = $this->structPathArrayDiff($structpath1_array, $structpath2_array);
 
-        if ($this->debug) {
-            $time_end = microtime(true);
-            $time = $time_end - $time_start;
-            $deltadiff_array["time"] = $time;
+        if ($this->config["debug"]) {
+            $deltadiff_array["time"] = $this->clockMark();
         }
 
-        $this->returnTypeConvert($deltadiff_array);
-        return $deltadiff_array;
+        return $this->returnTypeConvert($deltadiff_array);
     }
 
+    /**
+     * [There is several ways to do this and i believe it's not the best way,
+     *  but I chose this way, separately(structPathArray() + structPathArrayDiff()), 
+     *  to be more didactic.
+     *  In the middle of recursion I could already make comparisons could be faster.]
+     * @param  [array]  $assocarray  [Structure already standardized as associative array to get performance*]
+     * @param  [array]  &$array      [Array paths created from the structure]
+     * @param  [string] $currentpath [current path]
+     */
     private function structPathArray($assocarray, &$array, $currentpath)
     {
         if (is_array($assocarray)) {
@@ -171,8 +193,8 @@ class TreeWalker
 
                     if (gettype($assocarray[$key]) == "array") {
                         $this->structPathArray($assocarray[$key], $array, $path);
-                    } elseif (gettype($assocarray[$key]) == "object") {
-                        $this->structPathArray((arrary)$assocarray[$key], $array, $path);
+                    }elseif (gettype($assocarray[$key]) == "object") {
+                        $this->structPathArray((array)$assocarray[$key], $array, $path);
                     } else {
                         if ($path != "") {
                             //Lógica 1
@@ -184,18 +206,26 @@ class TreeWalker
         }
     }
 
-    private function replaceWalker(&$assocarray, $newvalue, $field, $onlyseed)
+    /**
+     * [its necessary to walk in the object recursively to change the values]
+     * @param  [array]                    &$assocarray [structure]
+     * @param  [int|float|boolean|string] $newvalue    [new value to replace]
+     * @param  [string|int|boolean]       $field       [key]
+     * @param  [boolean]                  $onlyleaf    [leaf or not]
+     * @return [array]                                 [Structure whith changed value]
+     */
+    private function replaceWalker(&$assocarray, $newvalue, $field, $onlyleaf)
     {
         if (is_array($assocarray)) {
             foreach ($assocarray as $key => &$value) {
                 if (isset($assocarray[$key])) {
                     if (is_array($assocarray[$key])) {
-                        if (!$onlyseed) {
+                        if (!$onlyleaf) {
                             if ($key == $field) {
                                 $value = $newvalue;
                             }
                         }
-                        $this->replaceWalker($assocarray[$key], $newvalue, $field, $onlyseed);
+                        $this->replaceWalker($assocarray[$key], $newvalue, $field, $onlyleaf);
                     } else {
                         if (isset($newvalue)) {
                             if (isset($field)) {
@@ -213,9 +243,14 @@ class TreeWalker
         return $assocarray;
     }
 
-    private function structPathArrayDiff($structpath1_array, $structpath2_array, &$deltadiff_array)
+    /**
+     * [Here , the object is mounted with the news]
+     * @param  [array] $structpath1_array [Vector paths of structure 1]
+     * @param  [array] $structpath2_array [Vector paths of structure 2]
+     * @return [array]                    [delta array]
+     */
+    private function structPathArrayDiff($structpath1_array, $structpath2_array)
     {
-
         $deltadiff_array = array(
             "new"     => array(),
             "removed" => array(),
@@ -240,30 +275,34 @@ class TreeWalker
 
         $removido = array_diff_key($structpath2_array, $structpath1_array);
 
-        /*print_r($structpath2_array);
-        echo "----------------------";
-        print_r($structpath1_array);*/
-
         if (!empty($removido)) {
             foreach ($removido as $key => $value) {
                 $deltadiff_array["removed"][$key] = $value;
             }
         }
 
-        //print_r($deltadiff_array);
+        return $deltadiff_array;
     }
 
-    private function returnTypeConvert(&$struct1)
+    /**
+     * [Returns a converted structure]
+     * @param  [array|string|\stdClass] $struct [structure for converting]
+     * @return [array|string|\stdClass]         [converted structure]
+     */
+    private function returnTypeConvert($struct)
     {
-        switch ($this->returnType) {
-
+        switch ($this->config["returntype"]) {
             case 'jsonstring':
-                $struct1 = json_encode($struct1);
+                if (!($this->isJsonString($struct))) {
+                    return json_encode($struct);
+                }
+                return $struct;
                 break;
-            case 'obj':
-                $struct1 = json_decode(json_encode($struct1), false);
+            case 'object':
+                return json_decode(json_encode($struct), false);
                 break;
             case 'array':
+                return $struct;
                 break;
             default:
                 return "returntype não é valido!";
@@ -271,25 +310,33 @@ class TreeWalker
         }
     }
 
-    private function studytype(&$struct1, &$problem)
+    /**
+     * [analyzes the structure]
+     * @param  [array|string|\stdClass] &$struct  [structure]
+     * @param  [string]                 &$problem [if there is a problem with the structure , it will be returned]
+     * @return [type]                             [true->Everything is ok, false->Error]
+     */
+    private function studyType(&$struct, &$problem)
     {
-        if ($this->isJsonString($struct1)) {
-            $struct1 = json_decode($struct1, true);
+        if ($this->isJsonString($struct)) {
+            $struct = json_decode($struct, true);
+            return true;
+        } else if(is_array($struct)) {
+            return true;
+        } else if(is_object($struct)) {
+            $struct = (array)$struct;
             return true;
         } else {
-            if (is_array($struct1)) {
-                return true;
-            } else {
-                if (is_object($struct1)) {
-                    return true;
-                } else {
-                    $problem = "comptype não é válido";
-                    return false;
-                }
-            }
+            $problem = "the parameter is not a valid structure";
+            return false;
         }
     }
 
+    /**
+     * [checks if the string is a valid json]
+     * @param  [string]    $string [Json string?]
+     * @return boolean             [true->Everything is ok, false->Error]
+     */
     private function isJsonString($string)
     {
         if (!is_string($string)) {
@@ -297,5 +344,23 @@ class TreeWalker
         } else {
             return (json_last_error() == JSON_ERROR_NONE);
         }
+    }
+
+    /**
+     * [Starts the clock]
+     * @return [type] [description]
+     */
+    private function clockStart()
+    {
+        $this->time_start = round(microtime(true) * 1000);
+    }
+
+    /**
+     * [Marks the current time]
+     * @return [type] [description]
+     */
+    private function clockMark() 
+    {
+        return round(microtime(true) * 1000) - $this->time_start . " miliseconds";
     }
 }
