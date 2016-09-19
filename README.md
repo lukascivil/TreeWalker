@@ -8,7 +8,7 @@ TreeWalker is a simple and smal API in php
   - getDynamicallyValue() - Dynamically access an object property
 
 ### Version
-0.3
+0.4
 
 ## Installation
 
