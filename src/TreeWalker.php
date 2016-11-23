@@ -184,20 +184,15 @@ class TreeWalker
         if (is_array($assocarray)) {
             foreach ($assocarray as $key => $value) {
                 if (isset($assocarray[$key])) {
-                    if ($key != "_id") {
-                        //Lógica 1
-                        $path = $currentpath ? $currentpath . "/" . $key : $key;
-                    } else {
-                        $path = $currentpath;
-                    }
+                    
+                    $path = $currentpath ? $currentpath . "/" . $key : $key;
 
                     if (gettype($assocarray[$key]) == "array") {
                         $this->structPathArray($assocarray[$key], $array, $path);
-                    }elseif (gettype($assocarray[$key]) == "object") {
+                    } elseif (gettype($assocarray[$key]) == "object") {
                         $this->structPathArray((array)$assocarray[$key], $array, $path);
                     } else {
                         if ($path != "") {
-                            //Lógica 1
                             $array[$path] = $value;
                         }
                     }
