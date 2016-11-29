@@ -31,11 +31,13 @@ class TreeWalker
         "returntype" => "jsonstring"
     );
 
+    private $typetowork = "array";
     private $time_start = 0;
     private $time_end = 0;
 
     /**
      * [__construct Class]
+     * 
      * @param [array] $config [associative array configuration]
      */
     public function __construct($config)
@@ -48,7 +50,7 @@ class TreeWalker
     /**
      * @param  [\stdClass|string|array] $struct         [Structure]
      * @param  [array]                  $keypath_array  [Array with the keys to access dynamically]
-     * @return [string]
+     * @return [\stdClass|string|array]
      */
     public function getDynamicallyValue($struct, $keypath_array)
     {
@@ -56,33 +58,72 @@ class TreeWalker
             return $problem;
         }
 
-        $value = $this->getDynamically($struct, $keypath_array);
+        $getDynamically = function($struct_assocarray, $keypath_array) use (&$getDynamically) {
+            
+            if (empty($keypath_array)) { // -> Stop Recursion
+                return $struct_assocarray;
+            }
+        
+            $key = array_shift($keypath_array);
+            
+            if (is_array($struct_assocarray)) {
+
+                if (array_key_exists($key, $struct_assocarray)) {
+                    return $getDynamically($struct_assocarray[$key], $keypath_array);
+                } else {
+                    echo "error";
+                    return '{"error": "Error, some key does not exist!"}';
+                }
+            }
+        };
+
+        $value = $getDynamically($struct, $keypath_array);
+
         return $this->returnTypeConvert($value);
     }
 
-    private function getDynamically($struct_assocarray, $keypath_array)
+    /**
+     * @param  [\stdClass|string|array] $struct         [Structure]
+     * @param  [array]                  $keypath_array  [Array with the keys to access dynamically]
+     * @param  [boolean]                $value          [Simple path with slashs or nested structures]
+     * @return [\stdClass|string|array]
+     */
+    public function setDynamicallyValue($struct, $keypath_array, $value = "") 
     {
-        if (empty($keypath_array)) { // -> Stop Recursion
-            return $struct_assocarray;
+        if (!$this->studyType($struct, $problem)) {
+            return $problem;
         }
 
-        $key = array_shift($keypath_array);
-
-        if (is_array($struct_assocarray)) {
-            if (array_key_exists($key, $struct_assocarray)) {
-                return $this->getDynamically($struct_assocarray[$key], $keypath_array);
-            } else {
-                return '{"error": "Error, some key does not exist!"}';
+        $setDynamically = function( &$struct_assocarray, $keypath_array, $value ) use (&$setDynamically) {
+            if (sizeof($keypath_array) == 1) { // -> Stop Recursion
+                $struct_assocarray[$keypath_array[0]] = $value;
             }
-        }
+
+            $key = array_shift($keypath_array);
+
+            if (is_array($struct_assocarray)) {
+                
+                if (array_key_exists($key, $struct_assocarray)) {
+                    //echo sizeof($keypath_array);
+                    return $setDynamically($struct_assocarray[$key], $keypath_array, $value);
+
+                } else {
+                    return '{"error": "Error, some key does not exist!"}';
+                }
+            }
+        };
+
+        $setDynamically($struct, $keypath_array, $value);
+
+        return $this->returnTypeConvert($struct);
     }
 
     /**
-     * Create nested obj Dynamically if(key exist || key !exist), by $path_string
-     *
-     * @param array|string|\stdClass $struct1 Structure
-     * @param array                  $keypath_array Array with the keys that will be created
-     * @return array|string|\stdClass
+     * [Create nested obj Dynamically if(key exist || key !exist), by $path_string
+     * 
+     * @param [array|string|\stdClass]  $struct1       [Structure]
+     * @param [array]                   $keypath_array [Array with the keys that will be created]
+     * @return [array|string|\stdClass]                New structure
      */
     public function createDynamicallyObjects($struct, $keypath_array)
     {
@@ -97,12 +138,13 @@ class TreeWalker
             $path_string .= $key . "/";
         }
 
-        $this->accessDynamically($path_string, $struct);
+        $this->accessDynamically($path_string, $struct); // cria
         return $this->returnTypeConvert($struct);
     }
 
     /**
-     * This function enables you to dynamically access the value of a structure
+     * [This function enables you to dynamically access the value of a structure]
+     * 
      * @param [string] $path_string   [path]
      * @param [array]  $array current [array]
      */
@@ -118,14 +160,13 @@ class TreeWalker
     }
 
     /**
-     * changes the value of a node of a structure from a key passed as a parameter . This node may be a leaf or not.
-     * @param  [array|string|\stdClass]         $struct  [structure]
-     * @param  [array|string|boolean|int|float] $newvalue [new value to replace]
-     * @param  [int|string]                     $field    [key]
-     * @param  [boolean]                        $onlyleaf [leaf or not]
-     * @return [array|string|\stdClass]                   [description]
+     * [walk throughout the structure]
+     * 
+     * @param  [array|string|\stdClass]         $struct   [Structure]
+     * @param  [function]                       $callback [The function will always be called when walking through the nodes]
+     * @return [array|string|\stdClass]                   Input structure
      */
-    public function replaceValues($struct, $newvalue, $field, $onlyleaf)
+    public function walker(&$struct, $callback)
     {
         if (!$this->studyType($struct, $problem)) {
             return $problem;
@@ -133,7 +174,27 @@ class TreeWalker
         
         $this->clockStart();
 
-        $replaced_array = $this->replaceWalker($struct, $newvalue, $field, $onlyleaf);
+        $replaceWalker = function(&$struct, $callback) use (&$replaceWalker) {
+
+            if (is_array($struct)) {
+                foreach ($struct as $key => &$value) {
+
+                    $callback($struct, $key, $value);
+
+                    if (isset($struct[$key])) {
+                        if (is_array($struct[$key])) {
+                            $replaceWalker($value, $callback);
+                        } else {
+
+                        }
+                    }
+                }
+            }
+            return $struct;
+        };
+
+        // Call the recursive method to walk in the struct
+        $replaced_array = $replaceWalker($struct, $callback);
 
         if ($this->config["debug"]) {
             $replaced_array["time"] = $this->clockMark();
@@ -144,11 +205,12 @@ class TreeWalker
 
     /**
      * Returns the difference between two structures
+     * 
      * @param  [array|string|\stdClass] $struct1 [struct1]
      * @param  [array|string|\stdClass] $struct2 [struct2]
      * @return [array|string|\stdClass] struct diff
      */
-    public function getdiff($struct1, $struct2)
+    public function getdiff($struct1, $struct2, $slashtoobject = false)
     {
         if (!$this->studyType($struct1, $problem) || !$this->studyType($struct2, $problem)) {
             return $problem;
@@ -161,7 +223,7 @@ class TreeWalker
 
         $this->structPathArray($struct1, $structpath1_array, "");
         $this->structPathArray($struct2, $structpath2_array, "");
-        $deltadiff_array = $this->structPathArrayDiff($structpath1_array, $structpath2_array);
+        $deltadiff_array = $this->structPathArrayDiff($structpath1_array, $structpath2_array, $slashtoobject);
 
         if ($this->config["debug"]) {
             $deltadiff_array["time"] = $this->clockMark();
@@ -171,20 +233,22 @@ class TreeWalker
     }
 
     /**
-     * [There is several ways to do this and i believe it's not the best way,
+     * [Returns a array with all the possible paths of the structure -> &$array.
+     *  There is several ways to do this and i believe it's not the best way,
      *  but I chose this way, separately(structPathArray() + structPathArrayDiff()), 
      *  to be more didactic.
      *  In the middle of recursion I could already make comparisons could be faster.]
+     *  
      * @param  [array]  $assocarray  [Structure already standardized as associative array to get performance*]
      * @param  [array]  &$array      [Array paths created from the structure]
-     * @param  [string] $currentpath [current path]
+     * @param  [string] $currentpath [Current path]
      */
     private function structPathArray($assocarray, &$array, $currentpath)
     {
         if (is_array($assocarray)) {
             foreach ($assocarray as $key => $value) {
                 if (isset($assocarray[$key])) {
-                    
+
                     $path = $currentpath ? $currentpath . "/" . $key : $key;
 
                     if (gettype($assocarray[$key]) == "array") {
@@ -202,49 +266,84 @@ class TreeWalker
     }
 
     /**
-     * [its necessary to walk in the object recursively to change the values]
-     * @param  [array]                    &$assocarray [structure]
-     * @param  [int|float|boolean|string] $newvalue    [new value to replace]
-     * @param  [string|int|boolean]       $field       [key]
-     * @param  [boolean]                  $onlyleaf    [leaf or not]
-     * @return [array]                                 [Structure whith changed value]
+     * [Join two structures]
+     * 
+     * @param  [array|string|\stdClass]   $struct1 [Structure]
+     * @param  [array|string|\stdClass]   $struct2 [Structure]
+     * @return [array|string|\stdClass]            [The union of structures]
      */
-    private function replaceWalker(&$assocarray, $newvalue, $field, $onlyleaf)
-    {
-        if (is_array($assocarray)) {
-            foreach ($assocarray as $key => &$value) {
-                if (isset($assocarray[$key])) {
-                    if (is_array($assocarray[$key])) {
-                        if (!$onlyleaf) {
-                            if ($key == $field) {
-                                $value = $newvalue;
-                            }
-                        }
-                        $this->replaceWalker($assocarray[$key], $newvalue, $field, $onlyleaf);
-                    } else {
-                        if (isset($newvalue)) {
-                            if (isset($field)) {
-                                if ($key == $field) {
-                                    $value = $newvalue;
-                                }
-                            } else {
-                                $value = $newvalue;
-                            }
-                        }
-                    }
-                }
-            }
+    public function structMerge($struct1, $struct2, $slashtoobject = false) {
+
+        if (!$this->studyType($struct1, $problem) || !$this->studyType($struct2, $problem)) {
+            return $problem;
         }
-        return $assocarray;
+
+        $this->clockStart();
+
+        $structpath1_array = array();
+        $structpath2_array = array();
+
+        $this->structPathArray($struct1, $structpath1_array, "");
+        $this->structPathArray($struct2, $structpath2_array, "");
+        $merged_array = array_merge($structpath2_array, $structpath1_array);
+        
+        if ($this->config["debug"]) {
+            $merged_array["time"] = $this->clockMark();
+        }
+
+        if ($slashtoobject) {
+            $merged_array = $this->pathSlashToStruct($merged_array);
+        }
+
+        return $this->returnTypeConvert($merged_array);
     }
 
     /**
-     * [Here , the object is mounted with the news]
-     * @param  [array] $structpath1_array [Vector paths of structure 1]
-     * @param  [array] $structpath2_array [Vector paths of structure 2]
-     * @return [array]                    [delta array]
+     * [Convert the slashs to nested structures]
+     * 
+     * @param  [type]   $assocarray [Associative array to convert the keys]
+     * @return [array]              [No slashs on key]
      */
-    private function structPathArrayDiff($structpath1_array, $structpath2_array)
+    private function pathSlashToStruct($assocarray) {
+        $new_assocarray = [];
+
+        $this->switchType();
+
+        if (is_array($assocarray)) {
+            foreach ($assocarray as $key => $value) {
+                if (strpos($key, '/') !== false) {
+                    $aux = explode("/", $key);
+                    $newkey = $aux[0];
+                    array_shift($aux);
+
+                    if ($new_assocarray[$newkey]) {
+                        $new_assocarray[$newkey] = $this->createDynamicallyObjects($new_assocarray[$newkey], $aux);
+                        $new_assocarray[$newkey] = $this->setDynamicallyValue($new_assocarray[$newkey], $aux, $value);
+
+                    } else {
+                        $new_assocarray[$newkey] = $this->createDynamicallyObjects(array(), $aux);
+                        $new_assocarray[$newkey] = $this->setDynamicallyValue($new_assocarray[$newkey], $aux, $value);
+                    } 
+                } else {
+                    $new_assocarray[$key] = $value;
+                }
+            }
+        }
+
+        $this->switchType();
+
+        return $new_assocarray;
+    }
+
+    /**
+     * [Returns a structure with the news]
+     * 
+     * @param  [array]   $structpath1_array [Vector paths of structure 1]
+     * @param  [array]   $structpath2_array [Vector paths of structure 2]
+     * @param  [boolean] $slashtoobject     [Simple path with slashs or nested structures]
+     * @return [array]                      [Delta array]
+     */
+    private function structPathArrayDiff($structpath1_array, $structpath2_array, $slashtoobject)
     {
         $deltadiff_array = array(
             "new"     => array(),
@@ -276,13 +375,20 @@ class TreeWalker
             }
         }
 
+        if ($slashtoobject) {
+            foreach ($deltadiff_array as $key => &$value) { //the length will be always 3, [new, removed, edited]
+                $value = $this->pathSlashToStruct($value);
+            }
+        } 
+
         return $deltadiff_array;
     }
 
     /**
      * [Returns a converted structure]
-     * @param  [array|string|\stdClass] $struct [structure for converting]
-     * @return [array|string|\stdClass]         [converted structure]
+     * 
+     * @param  [array|string|\stdClass] $struct [Structure for converting]
+     * @return [array|string|\stdClass]         [Converted structure]
      */
     private function returnTypeConvert($struct)
     {
@@ -307,8 +413,9 @@ class TreeWalker
 
     /**
      * [analyzes the structure]
-     * @param  [array|string|\stdClass] &$struct  [structure]
-     * @param  [string]                 &$problem [if there is a problem with the structure , it will be returned]
+     * 
+     * @param  [array|string|\stdClass] &$struct  [Structure]
+     * @param  [string]                 &$problem [If there is a problem with the structure , it will be returned]
      * @return [type]                             [true->Everything is ok, false->Error]
      */
     private function studyType(&$struct, &$problem)
@@ -329,6 +436,7 @@ class TreeWalker
 
     /**
      * [checks if the string is a valid json]
+     * 
      * @param  [string]    $string [Json string?]
      * @return boolean             [true->Everything is ok, false->Error]
      */
@@ -343,7 +451,6 @@ class TreeWalker
 
     /**
      * [Starts the clock]
-     * @return [type] [description]
      */
     private function clockStart()
     {
@@ -352,10 +459,21 @@ class TreeWalker
 
     /**
      * [Marks the current time]
-     * @return [type] [description]
+     * 
+     * @return [String] Time in milliseconds
      */
     private function clockMark() 
     {
         return round(microtime(true) * 1000) - $this->time_start . " miliseconds";
+    }
+
+    /**
+     * [switch the type]
+     */
+    private function switchType() 
+    {
+        $aux = $this->config["returntype"];
+        $this->config["returntype"] = $this->typetowork;
+        $this->typetowork = $aux;
     }
 }
