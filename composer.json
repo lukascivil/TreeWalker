@@ -1,7 +1,7 @@
 {
     "name": "lukascivil/treewalker",
-    "description": "TreeWalker is a simple and smal API in php that will help you to work with Objects in php",
-    "keywords": ["JSON","objects","diff"],
+    "description": "TreeWalker is a simple and small Library that will help you to work faster with manipulation of structures in PHP",
+    "keywords": ["JSON", "objects", "diff", "merge", "dynamically", "recursivelly", "array", "struct"],
     "license": "MIT",
     "minimum-stability": "stable",
     "authors": [
