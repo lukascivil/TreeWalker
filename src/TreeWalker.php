@@ -316,7 +316,7 @@ class TreeWalker
                     $newkey = $aux[0];
                     array_shift($aux);
 
-                    if ($new_assocarray[$newkey]) {
+                    if (isset($new_assocarray[$newkey])) {
                         $new_assocarray[$newkey] = $this->createDynamicallyObjects($new_assocarray[$newkey], $aux);
                         $new_assocarray[$newkey] = $this->setDynamicallyValue($new_assocarray[$newkey], $aux, $value);
 
