@@ -152,9 +152,9 @@ class TreeWalker
     {
         $keys = explode('/', substr_replace($path_string, "", -1));
         $ref = &$array;
-
-        while ($key = array_shift($keys)) {
-            $ref = &$ref[$key];
+        
+        foreach ($keys as $key => $value) {
+            $ref = &$ref[$value];
         }
         $ref = array();
     }
@@ -251,9 +251,9 @@ class TreeWalker
 
                     $path = $currentpath ? $currentpath . "/" . $key : $key;
 
-                    if (gettype($assocarray[$key]) == "array") {
+                    if (gettype($assocarray[$key]) == "array" && !empty($assocarray[$key])) {
                         $this->structPathArray($assocarray[$key], $array, $path);
-                    } elseif (gettype($assocarray[$key]) == "object") {
+                    } elseif (gettype($assocarray[$key]) == "object" && !empty((array)$assocarray[$key]) ) { // Force Casting (array)Obj
                         $this->structPathArray((array)$assocarray[$key], $array, $path);
                     } else {
                         if ($path != "") {
@@ -316,10 +316,9 @@ class TreeWalker
                     $newkey = $aux[0];
                     array_shift($aux);
 
-                    if ($new_assocarray[$newkey]) {
+                    if (isset($new_assocarray[$newkey])) {
                         $new_assocarray[$newkey] = $this->createDynamicallyObjects($new_assocarray[$newkey], $aux);
                         $new_assocarray[$newkey] = $this->setDynamicallyValue($new_assocarray[$newkey], $aux, $value);
-
                     } else {
                         $new_assocarray[$newkey] = $this->createDynamicallyObjects(array(), $aux);
                         $new_assocarray[$newkey] = $this->setDynamicallyValue($new_assocarray[$newkey], $aux, $value);
@@ -354,7 +353,7 @@ class TreeWalker
         foreach ($structpath1_array as $key1 => $value1) {
             if (array_key_exists($key1, $structpath2_array)) {
 
-                if ($value1 != $structpath2_array[$key1]) {
+                if ($value1 !== $structpath2_array[$key1]) {
 
                     $edited = array(
                         "oldvalue" => $structpath2_array[$key1],
