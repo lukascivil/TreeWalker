@@ -253,8 +253,12 @@ class TreeWalker
 
                     if (gettype($assocarray[$key]) == "array" && !empty($assocarray[$key])) {
                         $this->structPathArray($assocarray[$key], $array, $path);
-                    } elseif (gettype($assocarray[$key]) == "object" && !empty((array)$assocarray[$key]) ) { // Force Casting (array)Obj
-                        $this->structPathArray((array)$assocarray[$key], $array, $path);
+                    } elseif (gettype($assocarray[$key]) == "object") {
+                        if (!empty((array)$assocarray[$key]) ) { // Force Casting (array)Obj
+                            $this->structPathArray((array)$assocarray[$key], $array, $path);
+                        } else {
+                            $array[$path] = array();
+                        }
                     } else {
                         if ($path != "") {
                             $array[$path] = $value;
