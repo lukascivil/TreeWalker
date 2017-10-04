@@ -247,8 +247,7 @@ class TreeWalker
     {
         if (is_array($assocarray)) {
             foreach ($assocarray as $key => $value) {
-                if (isset($assocarray[$key])) {
-
+                if (array_key_exists($key, $assocarray)) {
                     $path = $currentpath ? $currentpath . "/" . $key : $key;
 
                     if (gettype($assocarray[$key]) == "array" && !empty($assocarray[$key])) {
