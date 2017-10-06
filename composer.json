@@ -1,6 +1,6 @@
 {
-    "name": "lukascivil/treewalker",
-    "description": "TreeWalker is a simple and small Library that will help you to work faster with manipulation of structures in PHP",
+    "name": "mattermack/treewalker",
+    "description": "TreeWalker is a simple and small Library that will help you to work faster with manipulation of structures in PHP.  Minor bug fixes to Lucas' implementation",
     "keywords": ["JSON", "objects", "diff", "merge", "dynamically", "recursivelly", "array", "struct"],
     "license": "MIT",
     "minimum-stability": "stable",
@@ -8,7 +8,10 @@
         {
             "name": "lucas cordeiro da Silva",
             "email": "lukas_civil@hotmail.com"
-        }
+        },
+		{
+			"name" : "Charles Mack"
+		}
     ],
     "require": {},
 	"require-dev": {
