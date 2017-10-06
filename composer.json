@@ -8,9 +8,15 @@
         {
             "name": "lucas cordeiro da Silva",
             "email": "lukas_civil@hotmail.com"
-        }
+        },
+		{
+			"name" : "Charles Mack"
+		}
     ],
     "require": {},
+	"require-dev": {
+		"phpunit/phpunit": "^6.2"
+	},
     "autoload": {
         "psr-4": {
             "": "src/"
