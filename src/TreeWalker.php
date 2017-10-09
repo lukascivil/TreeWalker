@@ -249,7 +249,7 @@ class TreeWalker
             foreach ($assocarray as $key => $value) {
                 if (array_key_exists($key, $assocarray)) {
 
-                    $path = $currentpath ? $currentpath . "/" . $key : $key;
+                    $path = $currentpath !== '' ? $currentpath . "/" . $key : sprintf($key);
 
                     if (gettype($assocarray[$key]) == "array" && !empty($assocarray[$key])) {
                         $this->structPathArray($assocarray[$key], $array, $path);
