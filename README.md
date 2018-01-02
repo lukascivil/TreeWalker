@@ -15,7 +15,7 @@ TreeWalker is a simple and small Library that will help you to work faster with 
 ### [EXAMPLE - master](http://treewalker.lukascivil.com.br/)
 
 ### Version
-0.8
+0.9
 
 ### Prerequisites
 * PHP >= 5.5
