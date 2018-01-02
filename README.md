@@ -11,6 +11,9 @@ TreeWalker is a simple and small Library that will help you to work faster with 
   - setDynamicallyValue() - Dynamically access a structure property to set a value
   
 *structure = ["jsonstring", "object", "array"]*
+
+### [EXAMPLE - master](http://treewalker.lukascivil.com.br/)
+
 ### Version
 0.8
 
