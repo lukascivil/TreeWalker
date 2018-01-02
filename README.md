@@ -17,6 +17,9 @@ TreeWalker is a simple and small Library that will help you to work faster with 
 ### Version
 0.8
 
+### Prerequisites
+* PHP >= 5.5
+
 ## Installation
 
 ### Using composer
