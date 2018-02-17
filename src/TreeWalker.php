@@ -467,7 +467,7 @@ class TreeWalker
      */
     private function clockMark() 
     {
-        return round(microtime(true) * 1000) - $this->time_start . " miliseconds";
+        return round(microtime(true) * 1000) - $this->time_start . " milliseconds";
     }
 
     /**
