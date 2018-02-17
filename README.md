@@ -33,6 +33,9 @@ Put the require statement for `TreeWalker` in your `composer.json` and install:
     }
 }
 ```
+```
+composer require lukascivil/treewalker
+```
 
 ### Manually
 
