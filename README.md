@@ -2,6 +2,9 @@
 
 TreeWalker is a simple and small Library that will help you to work faster with manipulation of structures in PHP
 
+[![Total Downloads](https://poser.pugx.org/lukascivil/treewalker/downloads)](https://packagist.org/packages/lukascivil/treewalker)
+[![License](https://poser.pugx.org/lukascivil/treewalker/license.svg)](https://packagist.org/packages/lukascivil/treewalker)
+
   - getdiff() - Get json difference
   - ~~replaceValues() - Edit json value (Recursively)~~
   - walker() - Edit json (Recursively)
