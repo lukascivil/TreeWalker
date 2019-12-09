@@ -7,8 +7,8 @@ class StackTest extends TestCase
   public function testPushAndPop()
   {
     $treewalker = new TreeWalker(array(
-        "debug" => true,
-        "returntype" => "array"
+        "debug" => false,
+        "returntype" => "jsonstring"
     ));
 
     $struct1 = array(
@@ -18,14 +18,14 @@ class StackTest extends TestCase
       '1' => array('3' => array('4' => '5'))
     );
     $expectedResult = array(
-      'edited'=> array(array('1/3/4'=> array('newValue'=> 5), array('oldValue'=> 6 ))), 
-      'new'=> null, 
-      'removed'=> array( '1/2'=> 7 )
+      'edited'=> array('1/3/4'=> array('newvalue'=> '5', 'oldvalue'=> '6' )), 
+      'new'=> array(), 
+      'removed'=> array( '1/2'=> '7' )
     );
-    // print_r($treewalker->getdiff($struct1, $struct2, true));
-    $result = $treewalker->getdiff($struct1, $struct2, true);
+    // print_r($treewalker->getdiff($struct2, $struct1, false));
+    $result = $treewalker->getdiff($struct2, $struct1, false);
 
-    $this->assertSame($result, $expectedResult);
+    $this->assertSame($result, json_encode($expectedResult));
 
     // $stack = [];
     // $this->assertSame(2, count($stack));
