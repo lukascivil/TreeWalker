@@ -15,5 +15,11 @@
         "psr-4": {
             "": "src/"
         }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5"
     }
 }
