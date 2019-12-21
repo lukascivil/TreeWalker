@@ -4,13 +4,12 @@ include __DIR__ . "/../src/TreeWalker.php";
 
 class StackTest extends TestCase
 {
-  public function testPushAndPop()
+  public function testComparingStructs()
   {
     $treewalker = new TreeWalker(array(
         "debug" => false,
-        "returntype" => "jsonstring"
+        "returntype" => "array"
     ));
-
     $struct1 = array(
       '1' => array('2' => '7', '3' => array('4' => '6'))
     );
@@ -22,19 +21,32 @@ class StackTest extends TestCase
       'new'=> array(), 
       'removed'=> array( '1/2'=> '7' )
     );
-    // print_r($treewalker->getdiff($struct2, $struct1, false));
     $result = $treewalker->getdiff($struct2, $struct1, false);
 
-    $this->assertSame($result, json_encode($expectedResult));
+    $this->assertEquals($result, $expectedResult);
+  }
 
-    // $stack = [];
-    // $this->assertSame(2, count($stack));
+  public function testComparingStructsContainingArrayProperty()
+  {
+    $treewalker = new TreeWalker(array(
+        "debug" => false,
+        "returntype" => "array"
+    ));
+    $struct1 = array(
+      'a' => 1,
+      'b' => array('c1' => 1, 'c2' => 2)
+    );
+    $struct2 = array(
+      'a' => 11,
+      'b' => array('c1' => 1, 'c2' => 22)
+    );
+    $expectedResult = array(
+      'edited'=> array('a'=> array('newvalue'=> 11, 'oldvalue'=> 1 ), 'b/1/c2'=> array('newvalue'=> 22, 'oldvalue'=> 2 )), 
+      'new'=> array(), 
+      'removed'=> array()
+    );
+    $result = $treewalker->getdiff($struct2, $struct1, false);
 
-    // array_push($stack, 'foo');
-    // $this->assertSame('foo', $stack[count($stack)-1]);
-    // $this->assertSame(1, count($stack));
-
-    // $this->assertSame('foo', array_pop($stack));
-    // $this->assertSame(0, count($stack));
+    $this->assertEquals($result, $expectedResult);
   }
 }
