@@ -9,6 +9,9 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
+      - name: Xdebug Action
+        uses: MilesChou/docker-xdebug@v1.0.0
+
       - name: Validate composer.json and composer.lock
         run: composer validate
 
@@ -18,5 +21,10 @@ jobs:
       - name: Run test suite
         run: composer run-script test
 
-      - name: Run codecov
-        run: bash <(curl -s https://codecov.io/bash)
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+      # - name: Run codecov
+      #   run: bash <(curl -s https://codecov.io/bash)

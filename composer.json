@@ -26,7 +26,7 @@
     }
   },
   "scripts": {
-    "test": "vendor/bin/phpunit --coverage-clover=coverage.xml",
+    "test": "vendor/bin/phpunit --coverage-text",
     "check-format": "vendor/bin/phpcs --standard=PSR2 src",
     "format": "vendor/bin/phpcbf --standard=PSR2 src && vendor/bin/phpcbf --standard=PSR2 tests"
   },
