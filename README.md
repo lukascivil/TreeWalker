@@ -4,6 +4,7 @@ TreeWalker is a simple and small Library that will help you to work faster with 
 
 [![Build Status](https://github.com/lukascivil/TreeWalker/workflows/PHP%20Composer/badge.svg)]()
 [![Total Downloads](https://poser.pugx.org/lukascivil/treewalker/downloads)](https://packagist.org/packages/lukascivil/treewalker)
+[![codecov](https://codecov.io/gh/lukascivil/TreeWalker/branch/master/graph/badge.svg)](https://codecov.io/gh/lukascivil/TreeWalker)
 [![License](https://poser.pugx.org/lukascivil/treewalker/license.svg)](https://packagist.org/packages/lukascivil/treewalker)
 
 - getdiff() - Get json difference
