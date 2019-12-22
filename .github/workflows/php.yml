@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Xdebug Action
-        uses: MilesChou/xdebug-action@master
+        uses: MilesChou/docker-xdebug@v1.0.0
 
       - name: Validate composer.json and composer.lock
         run: composer validate
