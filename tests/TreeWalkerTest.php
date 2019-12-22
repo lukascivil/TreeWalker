@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 
 class StackTest extends TestCase
 {
-    public function testComparingStructs()
+    public function testSimpleStructs()
     {
         $treewalker = new TreeWalker(array(
         "debug" => false,
@@ -27,7 +27,7 @@ class StackTest extends TestCase
         $this->assertEquals($result, $expectedResult);
     }
 
-    public function testComparingStructsContainingArrayProperty()
+    public function testStructsContainingArrayProperty()
     {
         $treewalker = new TreeWalker(array(
         "debug" => false,
@@ -35,11 +35,11 @@ class StackTest extends TestCase
         ));
         $struct1 = array(
         'a' => 1,
-        'b' => array('c1' => 1, 'c2' => 2)
+        'b' => array(array('c1' => 1), array('c2' => 2))
         );
         $struct2 = array(
         'a' => 11,
-        'b' => array('c1' => 1, 'c2' => 22)
+        'b' => array(array('c1' => 1), array('c2' => 22))
         );
         $expectedResult = array(
         'edited'=> array('a'=> array('newvalue'=> 11, 'oldvalue'=> 1 ), 'b/1/c2'=> array('newvalue'=> 22, 'oldvalue'=> 2 )),
@@ -65,7 +65,7 @@ class StackTest extends TestCase
         $struct2 = array(
         'a' => '1',
         'b' => 2,
-        'b' => true
+        'c' => true
         );
         $expectedResult = array(
         'edited'=> array('a'=> array('newvalue'=> '1', 'oldvalue'=> 1 ), 'c'=> array('newvalue'=> true, 'oldvalue'=> 3 )),
