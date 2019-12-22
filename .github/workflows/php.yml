@@ -8,6 +8,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+      - uses: MilesChou/xdebug-action@master
 
       - name: Validate composer.json and composer.lock
         run: composer validate
