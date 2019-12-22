@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit colors="true" verbose="true">
+<phpunit bootstrap="vendor/autoload.php" colors="true" verbose="true">
   <logging>
-    <log type="coverage-clover" target="clover.xml"/>
+    <log type="coverage-clover" target="./coverage.xml"/>
   </logging>
   <testsuites>
     <testsuite name="unit">
       <directory suffix=".php">tests/</directory>
     </testsuite>
   </testsuites>
+   <filter>
+      <whitelist>
+        <directory suffix=".php">./src</directory>
+      </whitelist>
+    </filter>
 </phpunit>
