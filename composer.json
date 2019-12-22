@@ -1,19 +1,37 @@
 {
-    "name": "lukascivil/treewalker",
-    "description": "TreeWalker is a simple and small Library that will help you to work faster with manipulation of structures in PHP",
-    "keywords": ["JSON", "objects", "diff", "merge", "dynamically", "recursivelly", "array", "struct"],
-    "license": "MIT",
-    "minimum-stability": "stable",
-    "authors": [
-        {
-            "name": "lucas cordeiro da Silva",
-            "email": "lukas_civil@hotmail.com"
-        }
-    ],
-    "require": {},
-    "autoload": {
-        "psr-4": {
-            "": "src/"
-        }
+  "name": "lukascivil/treewalker",
+  "description": "TreeWalker is a simple and small Library that will help you to work faster with manipulation of structures in PHP",
+  "keywords": [
+    "JSON",
+    "objects",
+    "diff",
+    "merge",
+    "dynamically",
+    "recursivelly",
+    "array",
+    "struct"
+  ],
+  "license": "MIT",
+  "minimum-stability": "stable",
+  "authors": [
+    {
+      "name": "lucas cordeiro da Silva",
+      "email": "lukas_civil@hotmail.com"
     }
+  ],
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "": "src/"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit",
+    "check-format": "vendor/bin/phpcs --standard=PSR2 src",
+    "format": "vendor/bin/phpcbf --standard=PSR2 src && vendor/bin/phpcbf --standard=PSR2 tests"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5",
+    "squizlabs/php_codesniffer": "3.*"
+  }
 }
