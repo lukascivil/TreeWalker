@@ -50,4 +50,30 @@ class StackTest extends TestCase
 
         $this->assertEquals($result, $expectedResult);
     }
+
+    public function testStructsContainingDifferentTypes()
+    {
+        $treewalker = new TreeWalker(array(
+        "debug" => false,
+        "returntype" => "array"
+        ));
+        $struct1 = array(
+        'a' => 1,
+        'b' => array('c1' => 2),
+        'c' => 3
+        );
+        $struct2 = array(
+        'a' => '1',
+        'b' => 2,
+        'b' => true
+        );
+        $expectedResult = array(
+        'edited'=> array('a'=> array('newvalue'=> '1', 'oldvalue'=> 1 ), 'c'=> array('newvalue'=> true, 'oldvalue'=> 3 )),
+        'new'=> array('b' => 2),
+        'removed'=> array('b/c1' => 2)
+        );
+        $result = $treewalker->getdiff($struct2, $struct1, false);
+
+        $this->assertEquals($result, $expectedResult);
+    }
 }
