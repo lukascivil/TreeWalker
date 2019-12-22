@@ -19,10 +19,6 @@ _structure = ["jsonstring", "object", "array"]_
 
 ### [EXAMPLE - master](http://treewalker.lukascivil.com.br/)
 
-### Version
-
-0.9
-
 ### Prerequisites
 
 - PHP >= 5.5
