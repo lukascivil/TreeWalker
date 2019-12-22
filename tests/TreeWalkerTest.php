@@ -1,7 +1,7 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-include __DIR__ . "/../src/TreeWalker.php";
+// include __DIR__ . "/../src/TreeWalker.php";
 
 class StackTest extends TestCase
 {
