@@ -2,6 +2,7 @@
 
 TreeWalker is a simple and small Library that will help you to work faster with manipulation of structures in PHP
 
+[![Build Status](https://github.com/lukascivil/TreeWalker/workflows/PHP%20Composer/badge.svg)]()
 [![Total Downloads](https://poser.pugx.org/lukascivil/treewalker/downloads)](https://packagist.org/packages/lukascivil/treewalker)
 [![License](https://poser.pugx.org/lukascivil/treewalker/license.svg)](https://packagist.org/packages/lukascivil/treewalker)
 
