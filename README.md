@@ -195,6 +195,9 @@ composer install
 composer test
 ```
 
+## Additional context
+If you need the JS version to also compare objects, you can use this ([JsonDifference](https://github.com/lukascivil/jsondiffer)) lib which will have the same result on the client side.
+
 ## License
 
 The MIT License (MIT)
