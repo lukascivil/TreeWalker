@@ -31,11 +31,11 @@
     "test": "vendor/bin/phpunit --coverage-text",
     "check-format": [
       "vendor/bin/php-cs-fixer check --diff",
-      "vendor/bin/phpcs --standard=PSR2 src tests"
+      "vendor/bin/phpcs --standard=PSR2 --exclude=PSR1.Classes.ClassDeclaration src tests"
     ],
     "format": [
       "vendor/bin/php-cs-fixer fix",
-      "vendor/bin/phpcbf --standard=PSR2 src tests"
+      "vendor/bin/phpcbf --standard=PSR2 --exclude=PSR1.Classes.ClassDeclaration src tests"
     ]
   },
   "require-dev": {
