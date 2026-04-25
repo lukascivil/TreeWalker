@@ -10,7 +10,7 @@ class TreeWalkerTest extends TestCase
 
     public function testGetdiffSimpleStructs(): void
     {
-        $treewalker = new TreeWalker(array(
+        $treeWalker = new TreeWalker(array(
             "debug" => false,
             "returntype" => "array"
         ));
@@ -24,12 +24,12 @@ class TreeWalkerTest extends TestCase
             'removed' => array('1/2' => '7')
         );
 
-        $this->assertEquals($expectedResult, $treewalker->getdiff($struct2, $struct1, false));
+        $this->assertEquals($expectedResult, $treeWalker->getdiff($struct2, $struct1, false));
     }
 
     public function testGetdiffWithArrayProperty(): void
     {
-        $treewalker = new TreeWalker(array(
+        $treeWalker = new TreeWalker(array(
             "debug" => false,
             "returntype" => "array"
         ));
@@ -46,12 +46,12 @@ class TreeWalkerTest extends TestCase
             'removed' => array()
         );
 
-        $this->assertEquals($expectedResult, $treewalker->getdiff($struct2, $struct1, false));
+        $this->assertEquals($expectedResult, $treeWalker->getdiff($struct2, $struct1, false));
     }
 
     public function testGetdiffWithDifferentTypes(): void
     {
-        $treewalker = new TreeWalker(array(
+        $treeWalker = new TreeWalker(array(
             "debug" => false,
             "returntype" => "array"
         ));
@@ -68,14 +68,14 @@ class TreeWalkerTest extends TestCase
             'removed' => array('b/c1' => 2)
         );
 
-        $this->assertEquals($expectedResult, $treewalker->getdiff($struct2, $struct1, false));
+        $this->assertEquals($expectedResult, $treeWalker->getdiff($struct2, $struct1, false));
     }
 
     public function testGetdiffWithJsonInput(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
 
-        $result = $treewalker->getdiff('{"a":1,"b":2}', '{"a":1,"b":3}', false);
+        $result = $treeWalker->getdiff('{"a":1,"b":2}', '{"a":1,"b":3}', false);
 
         $this->assertArrayHasKey('edited', $result);
         $this->assertArrayHasKey('b', $result['edited']);
@@ -85,9 +85,9 @@ class TreeWalkerTest extends TestCase
 
     public function testGetdiffWithObjectInput(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
 
-        $result = $treewalker->getdiff((object)array('a' => 1, 'b' => 2), (object)array('a' => 1, 'b' => 3), false);
+        $result = $treeWalker->getdiff((object)array('a' => 1, 'b' => 2), (object)array('a' => 1, 'b' => 3), false);
 
         $this->assertArrayHasKey('edited', $result);
         $this->assertArrayHasKey('b', $result['edited']);
@@ -95,9 +95,9 @@ class TreeWalkerTest extends TestCase
 
     public function testGetdiffSlashToObject(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
 
-        $result = $treewalker->getdiff(array('a' => array('b' => 1)), array('a' => array('b' => 2)), true);
+        $result = $treeWalker->getdiff(array('a' => array('b' => 1)), array('a' => array('b' => 2)), true);
 
         $this->assertArrayHasKey('edited', $result);
         $this->assertArrayHasKey('a', $result['edited']);
@@ -106,9 +106,9 @@ class TreeWalkerTest extends TestCase
 
     public function testGetdiffReturnsJsonString(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "jsonstring"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "jsonstring"));
 
-        $result = $treewalker->getdiff(array('a' => 1), array('a' => 2), false);
+        $result = $treeWalker->getdiff(array('a' => 1), array('a' => 2), false);
 
         $this->assertIsString($result);
         $this->assertIsArray(json_decode($result, true));
@@ -116,9 +116,9 @@ class TreeWalkerTest extends TestCase
 
     public function testGetdiffReturnsObject(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "object"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "object"));
 
-        $result = $treewalker->getdiff(array('a' => 1), array('a' => 2), false);
+        $result = $treeWalker->getdiff(array('a' => 1), array('a' => 2), false);
 
         $this->assertIsObject($result);
         $this->assertObjectHasProperty('edited', $result);
@@ -130,27 +130,27 @@ class TreeWalkerTest extends TestCase
 
     public function testGetDynamicallyValueReturnsScalar(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
 
         $struct = array('a' => array('b' => array('c' => 42)));
 
-        $this->assertEquals(42, $treewalker->getDynamicallyValue($struct, array('a', 'b', 'c')));
+        $this->assertEquals(42, $treeWalker->getDynamicallyValue($struct, array('a', 'b', 'c')));
     }
 
     public function testGetDynamicallyValueReturnsNestedArray(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
 
         $struct = array('a' => array('b' => array('x' => 1, 'y' => 2)));
 
-        $this->assertEquals(array('x' => 1, 'y' => 2), $treewalker->getDynamicallyValue($struct, array('a', 'b')));
+        $this->assertEquals(array('x' => 1, 'y' => 2), $treeWalker->getDynamicallyValue($struct, array('a', 'b')));
     }
 
     public function testGetDynamicallyValueWithJsonInput(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
 
-        $this->assertEquals(99, $treewalker->getDynamicallyValue('{"a":{"b":99}}', array('a', 'b')));
+        $this->assertEquals(99, $treeWalker->getDynamicallyValue('{"a":{"b":99}}', array('a', 'b')));
     }
 
     // -------------------------------------------------------------------------
@@ -159,20 +159,20 @@ class TreeWalkerTest extends TestCase
 
     public function testSetDynamicallyValueUpdatesNestedKey(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
 
         $struct = array('a' => array('b' => 1));
-        $result = $treewalker->setDynamicallyValue($struct, array('a', 'b'), 99);
+        $result = $treeWalker->setDynamicallyValue($struct, array('a', 'b'), 99);
 
         $this->assertEquals(array('a' => array('b' => 99)), $result);
     }
 
     public function testSetDynamicallyValueDoesNotMutateOriginal(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
 
         $struct = array('a' => array('b' => 1));
-        $treewalker->setDynamicallyValue($struct, array('a', 'b'), 99);
+        $treeWalker->setDynamicallyValue($struct, array('a', 'b'), 99);
 
         $this->assertEquals(1, $struct['a']['b']);
     }
@@ -183,19 +183,19 @@ class TreeWalkerTest extends TestCase
 
     public function testCreateDynamicallyObjectsOnEmptyStruct(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
 
-        $result = $treewalker->createDynamicallyObjects(array(), array('level1', 'level2'));
+        $result = $treeWalker->createDynamicallyObjects(array(), array('level1', 'level2'));
 
         $this->assertEquals(array('level1' => array('level2' => array())), $result);
     }
 
     public function testCreateDynamicallyObjectsAddsToExistingStruct(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
 
         $struct = array('existing' => 1);
-        $result = $treewalker->createDynamicallyObjects($struct, array('new', 'path'));
+        $result = $treeWalker->createDynamicallyObjects($struct, array('new', 'path'));
 
         $this->assertArrayHasKey('existing', $result);
         $this->assertEquals(array(), $result['new']['path']);
@@ -207,10 +207,10 @@ class TreeWalkerTest extends TestCase
 
     public function testWalkerModifiesValues(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
 
         $struct = array('a' => 1, 'b' => 2, 'c' => array('d' => 3));
-        $result = $treewalker->walker($struct, function (&$struct, $key, &$value) {
+        $result = $treeWalker->walker($struct, function (&$struct, $key, &$value) {
             if (is_int($value)) {
                 $value = $value * 2;
             }
@@ -221,10 +221,10 @@ class TreeWalkerTest extends TestCase
 
     public function testWalkerDeletesNode(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
 
         $struct = array('a' => 1, 'b' => 2, 'c' => 3);
-        $result = $treewalker->walker($struct, function (&$struct, $key, &$value) {
+        $result = $treeWalker->walker($struct, function (&$struct, $key, &$value) {
             if ($key === 'b') {
                 unset($struct[$key]);
             }
@@ -239,12 +239,12 @@ class TreeWalkerTest extends TestCase
 
     public function testStructMergeFirstOverridesSecond(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
 
         $struct1 = array('a' => 1, 'b' => 2);
         $struct2 = array('b' => 99, 'c' => 3);
 
-        $result = $treewalker->structMerge($struct1, $struct2, false);
+        $result = $treeWalker->structMerge($struct1, $struct2, false);
 
         $this->assertEquals(1, $result['a']);
         $this->assertEquals(2, $result['b']);
@@ -253,9 +253,9 @@ class TreeWalkerTest extends TestCase
 
     public function testStructMergeSlashToObject(): void
     {
-        $treewalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
 
-        $result = $treewalker->structMerge(
+        $result = $treeWalker->structMerge(
             array('a' => array('b' => 1)),
             array('a' => array('c' => 2)),
             true
@@ -272,9 +272,9 @@ class TreeWalkerTest extends TestCase
 
     public function testDebugModeAddsTimeKey(): void
     {
-        $treewalker = new TreeWalker(array("debug" => true, "returntype" => "array"));
+        $treeWalker = new TreeWalker(array("debug" => true, "returntype" => "array"));
 
-        $result = $treewalker->getdiff(array('a' => 1), array('a' => 2), false);
+        $result = $treeWalker->getdiff(array('a' => 1), array('a' => 2), false);
 
         $this->assertArrayHasKey('time', $result);
         $this->assertStringContainsString('milliseconds', $result['time']);
