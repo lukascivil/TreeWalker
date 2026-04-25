@@ -287,7 +287,8 @@ class TreeWalkerTest extends TestCase
         $treeWalker = new TreeWalker(array("debug" => true, "returntype" => "array"));
 
         $struct = array('a' => 1);
-        $result = $treeWalker->walker($struct, function (&$struct, $key, &$value) {});
+        $result = $treeWalker->walker($struct, function (&$struct, $key, &$value) {
+        });
 
         $this->assertArrayHasKey('time', $result);
         $this->assertStringContainsString('milliseconds', $result['time']);

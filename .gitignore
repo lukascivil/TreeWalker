@@ -3,3 +3,4 @@
 /vendor
 coverage.xml
 .claude/settings.local.json
+.php-cs-fixer.cache
