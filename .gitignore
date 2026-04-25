@@ -2,3 +2,4 @@
 .idea
 /vendor
 coverage.xml
+.claude/settings.local.json
