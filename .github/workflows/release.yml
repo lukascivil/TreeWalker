@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [master]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Semantic Release
+        id: release
+        uses: cycjimmy/semantic-release-action@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          extra_plugins: |
+            @semantic-release/changelog@6
+            @semantic-release/git@10
+            conventional-changelog-conventionalcommits@7
+
+      - name: Notify Packagist
+        if: steps.release.outputs.new_release_published == 'true'
+        run: |
+          curl -s -XPOST \
+            -H 'content-type: application/json' \
+            "https://packagist.org/api/update-package?username=${{ secrets.PACKAGIST_USERNAME }}&apiToken=${{ secrets.PACKAGIST_TOKEN }}" \
+            -d '{"repository":{"url":"https://github.com/${{ github.repository }}"}}'

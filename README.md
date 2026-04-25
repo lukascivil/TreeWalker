@@ -1,223 +1,249 @@
 # TreeWalker
 
-TreeWalker is a simple and small Library that will help you to work faster with manipulation of structures in PHP
+A simple and lightweight PHP library for manipulating nested structures — arrays, objects and JSON strings interchangeably.
 
 [![Build Status](https://github.com/lukascivil/TreeWalker/workflows/PHP%20Composer/badge.svg)]()
 [![Total Downloads](https://poser.pugx.org/lukascivil/treewalker/downloads)](https://packagist.org/packages/lukascivil/treewalker)
 [![codecov](https://codecov.io/gh/lukascivil/TreeWalker/branch/master/graph/badge.svg)](https://codecov.io/gh/lukascivil/TreeWalker)
 [![License](https://poser.pugx.org/lukascivil/treewalker/license.svg)](https://packagist.org/packages/lukascivil/treewalker)
 
-- getdiff() - Get json difference
-- ~~replaceValues() - Edit json value (Recursively)~~
-- walker() - Edit json (Recursively)
-- structMerge() - Joins two structures
-- createDynamicallyObjects() - Create nested structure by Dynamic keys
-- getDynamicallyValue() - Dynamically get a structure property
-- setDynamicallyValue() - Dynamically access a structure property to set a value
+## Methods
 
-_structure = ["jsonstring", "object", "array"]_
+| Method | Description |
+|--------|-------------|
+| `getdiff()` | Returns the difference between two structures |
+| `walker()` | Walks recursively through a structure, allowing edits and deletions |
+| `structMerge()` | Merges two structures (first argument takes precedence) |
+| `createDynamicallyObjects()` | Creates nested keys dynamically |
+| `getDynamicallyValue()` | Reads a value by dynamic key path |
+| `setDynamicallyValue()` | Sets a value by dynamic key path |
 
-### [EXAMPLE - master](http://treewalker.lukascivil.com.br/)
+### [Live example](http://treewalker.lukascivil.com.br/)
 
-### Prerequisites
+All methods accept and return any of the three supported structure types:
 
-- PHP >= 5.5
+```
+"jsonstring" | "object" | "array"
+```
+
+## Requirements
+
+- PHP >= 8.1
 
 ## Installation
 
-### Using composer
-
-Put the require statement for `TreeWalker` in your `composer.json` and install:
-
-```json
-{
-  "require": {
-    "lukascivil/treewalker": "dev-master"
-  }
-}
+```bash
+composer require lukascivil/treewalker
 ```
 
-```
-composer require lukascivil/treewalker dev-master
-```
+## Usage
 
-### Manually
-
-include the `TreeWalker.php`
+### Initialization
 
 ```php
 <?php
-include 'pathto/TreeWalker.php';
+
+$treeWalker = new TreeWalker([
+    "debug"      => false,    // true = append execution time to output
+    "returntype" => "array"   // "jsonstring" | "object" | "array"
+]);
 ```
 
-### Examples
+---
 
-Init:
+### getdiff()
 
-      $treewalker = new TreeWalker(array(
-        "debug"=>true,                      //true => return the execution time, false => not
-        "returntype"=>"jsonstring")         //Returntype = ["obj","jsonstring","array"]
-      );
+Returns the difference between two structures, split into `new`, `removed` and `edited` keys.
 
-Methods:
+```php
+<?php
 
-```sh
-    //getdiff() - this method will return the diference between struct1 and struct2
+$struct1 = ["casa" => 1, "b" => "5", "cafeina" => ["ss" => "ddd"], "oi" => 5];
+$struct2 = ["casa" => 2, "cafeina" => ["ss" => "dddd"], "oi2" => 5];
 
-    $struct1 = array("casa"=>1, "b"=>"5", "cafeina"=>array("ss"=>"ddd"), "oi"=>5);
-    $struct2 = array("casa"=>2, "cafeina"=>array("ss"=>"dddd"), "oi2"=>5);
+$treeWalker->getdiff($struct1, $struct2, false); // false = flat slash-delimited keys
+```
 
-    $treewalker->getdiff($struct1, $struct2, false) // false -> with slashs
+Output:
 
-    Output:
-    {
-        new: {
-            b: "5",
-            oi: 5
+```json
+{
+    "new": {
+        "b": "5",
+        "oi": 5
+    },
+    "removed": {
+        "oi2": 5
+    },
+    "edited": {
+        "casa": {
+            "oldvalue": 2,
+            "newvalue": 1
         },
-        removed: {
-            oi2: 5
-        },
-        edited: {
-            casa: {
-              oldvalue: 2,
-              newvalue: 1
-            },
-            cafeina/ss: {
-              oldvalue: "dddd",
-              newvalue: "ddd"
-            }
-        },
-        time: 0
+        "cafeina/ss": {
+            "oldvalue": "dddd",
+            "newvalue": "ddd"
+        }
+    }
+}
+```
+
+Pass `true` as the third argument to get nested output instead of slash-delimited keys:
+
+```php
+<?php
+
+$treeWalker->getdiff($struct1, $struct2, true); // true = nested output
+```
+
+---
+
+### walker()
+
+Walks recursively through the structure. The callback receives the parent array, the current key and the current value by reference, allowing in-place modification or deletion.
+
+```php
+<?php
+
+$struct = ["casa" => 2, "cafeina" => ["ss" => ["ff" => 21, "ff1" => 22]], "oi2" => 5];
+
+$treeWalker->walker($struct, function (&$struct, $key, &$value) {
+    if ($key === "ff") {
+        unset($struct[$key]);      // delete node
     }
 
+    if ($key === "ff1") {
+        $value = ["son" => "tiago"]; // replace value
+    }
+});
 ```
 
-```sh
-    //walker() - Walk recursively through the structure
+Output:
 
-    $struct = array("casa"=>2, "cafeina"=>array("ss"=>array("ff"=>21, "ff1"=>22)), "oi2"=>5, "1"=>"", "ss"=>"dddddf");
-
-    $treewalker->walker($struct, function(&$struct, $key, &$value) {
-        //Removing element
-        if ($key == "ff") {
-            unset($struct[$key]);
-        }
-
-        //changing element
-        if ($key == "ff1") {
-            $value = array("son" => "tiago");
-        }
-    })
-
-    Output:
-    {"casa":2,"cafeina":{"ss":{"ff1":{"son":"tiago"}}},"oi2":5,"1":"","ss":"dddddf","time":"0 miliseconds"}
-
+```json
+{"casa": 2, "cafeina": {"ss": {"ff1": {"son": "tiago"}}}, "oi2": 5}
 ```
 
-```sh
-    //structMerge() - Merge Structures
+---
 
-    $struct1 = array("casa"=>1, "b"=>"5", "cafeina"=>array("ss1"=>"1", "ss2"=>"2"), "oi"=>5, "1" => "255");
-    $struct2 = array("casa"=>2, "cafeina"=>array("ss"=>array("ff"=>21, "ff1"=>22)), "oi2"=>5, "1"=>"", "ss"=>"dddddf");
+### structMerge()
 
-    $treewalker->structMerge($struct2, $struct1, true); //true -> No slashs
+Merges two structures. Values from the first argument take precedence over the second.
 
-    Output:
-    {"casa":2,"b":"5","cafeina":{"ss1":"1","ss2":"2","ss":{"ff":21,"ff1":22}},"oi":5,"0":"255","oi2":5,"1":"","ss":"dddddf","time":"0 miliseconds"}
+```php
+<?php
+
+$struct1 = ["casa" => 1, "b" => "5", "cafeina" => ["ss1" => "1", "ss2" => "2"], "oi" => 5];
+$struct2 = ["casa" => 2, "cafeina" => ["ss" => ["ff" => 21, "ff1" => 22]], "oi2" => 5, "ss" => "dddddf"];
+
+$treeWalker->structMerge($struct1, $struct2, true); // true = nested output
 ```
 
-```sh
-    //createDynamicallyObjects() - this method will create nested objects with with dynamic keys
+Output:
 
-    $struct = array("casa"=>1, "b"=>"5", "cafeina"=>array("ss"=>"ddd"), "oi"=>5, "1" => "255");
+```json
+{"casa": 1, "b": "5", "cafeina": {"ss1": "1", "ss2": "2", "ss": {"ff": 21, "ff1": 22}}, "oi": 5, "oi2": 5, "ss": "dddddf"}
+```
 
-    //P.s
-    $treewalker->createDynamicallyObjects($struct, array(1,2,5,9,10,11));
+---
 
-    Output:
+### createDynamicallyObjects()
 
-     {
-       "casa": 1,
-       "b": "5",
-       "cafeina": {
-          "ss": "ddd"
-       },
-       "oi": 5,
-       "1": {
-          "2": {
+Creates nested empty objects from a dynamic array of keys.
+
+```php
+<?php
+
+$struct = ["casa" => 1, "b" => "5", "cafeina" => ["ss" => "ddd"], "oi" => 5];
+
+$treeWalker->createDynamicallyObjects($struct, [1, 2, 5, 9, 10, 11]);
+```
+
+Output:
+
+```json
+{
+    "casa": 1,
+    "b": "5",
+    "cafeina": {"ss": "ddd"},
+    "oi": 5,
+    "1": {
+        "2": {
             "5": {
-              "9": {
-                "10": {
-                  "11": {}
+                "9": {
+                    "10": {
+                        "11": {}
+                    }
                 }
-              }
             }
-          }
         }
-      }
+    }
+}
 ```
 
-```sh
-    //getDynamicallyValue()
+---
 
-    $struct = array("casa"=>2, "cafeina"=>array("ss"=>array("ff"=>21, "ff1"=>22)), "oi2"=>5, "1"=>"", "ss"=>"dddddf");
+### getDynamicallyValue()
 
-    Static access:
-    $struct["cafeina"]["ss"];
+Reads a value from a structure using a dynamic key path.
 
-    Dynamic access:
-    $treewalker->getDynamicallyValue($struct, array("cafeina","ss"));
+```php
+<?php
 
-    Output:
-    {"ff":21,"ff1":22}
+$struct = ["casa" => 2, "cafeina" => ["ss" => ["ff" => 21, "ff1" => 22]], "oi2" => 5];
+
+// Static access
+$struct["cafeina"]["ss"];
+
+// Dynamic access
+$treeWalker->getDynamicallyValue($struct, ["cafeina", "ss"]);
 ```
 
-```sh
-    //setDynamicallyValue()
+Output:
 
-    $struct = array("casa"=>2, "cafeina"=>array("ss"=>array("ff"=>21, "ff1"=>22)), "oi2"=>5, "1"=>"", "ss"=>"dddddf");
-
-    Static access:
-    $struct["cafeina"]["ss"] = "newvalue";
-
-    Dynamic access:
-    $treewalker->setDynamicallyValue($struct, array("cafeina","ss"), "newvalue");
-
-    Output:
-    {"casa":2,"cafeina":{"ss":"newvalue"},"oi2":5,"1":"","ss":"dddddf"}
+```json
+{"ff": 21, "ff1": 22}
 ```
 
-## Test
+---
 
+### setDynamicallyValue()
+
+Sets a value in a structure using a dynamic key path.
+
+```php
+<?php
+
+$struct = ["casa" => 2, "cafeina" => ["ss" => ["ff" => 21, "ff1" => 22]], "oi2" => 5];
+
+// Static access
+$struct["cafeina"]["ss"] = "newvalue";
+
+// Dynamic access
+$treeWalker->setDynamicallyValue($struct, ["cafeina", "ss"], "newvalue");
 ```
-composer install
-composer test
+
+Output:
+
+```json
+{"casa": 2, "cafeina": {"ss": "newvalue"}, "oi2": 5}
+```
+
+---
+
+## Development
+
+```bash
+composer install       # install dev dependencies
+composer test          # run tests with coverage
+composer check-format  # PSR-2 lint
+composer format        # PSR-2 autofix
 ```
 
 ## Additional context
-If you need the JS version to also compare objects, you can use this ([JsonDifference](https://github.com/lukascivil/jsondiffer)) lib which will have the same result on the client side.
+
+If you need the JavaScript equivalent for client-side structure comparison, see [JsonDifference](https://github.com/lukascivil/jsondiffer).
 
 ## License
 
-The MIT License (MIT)
-
-    Copyright (c) [2016] [LUCAS CORDEIRO DA SILVA]
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
+MIT © [Lucas Cordeiro da Silva](https://github.com/lukascivil)
