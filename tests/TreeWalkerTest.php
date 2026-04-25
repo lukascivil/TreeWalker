@@ -1,7 +1,9 @@
 <?php
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(TreeWalker::class)]
 class TreeWalkerTest extends TestCase
 {
     // -------------------------------------------------------------------------
@@ -278,5 +280,92 @@ class TreeWalkerTest extends TestCase
 
         $this->assertArrayHasKey('time', $result);
         $this->assertStringContainsString('milliseconds', $result['time']);
+    }
+
+    public function testDebugModeWalker(): void
+    {
+        $treeWalker = new TreeWalker(array("debug" => true, "returntype" => "array"));
+
+        $result = $treeWalker->walker(array('a' => 1), function (&$struct, $key, &$value) {});
+
+        $this->assertArrayHasKey('time', $result);
+        $this->assertStringContainsString('milliseconds', $result['time']);
+    }
+
+    public function testDebugModeStructMerge(): void
+    {
+        $treeWalker = new TreeWalker(array("debug" => true, "returntype" => "array"));
+
+        $result = $treeWalker->structMerge(array('a' => 1), array('b' => 2), false);
+
+        $this->assertArrayHasKey('time', $result);
+        $this->assertStringContainsString('milliseconds', $result['time']);
+    }
+
+    // -------------------------------------------------------------------------
+    // error handling and edge cases
+    // -------------------------------------------------------------------------
+
+    public function testStudyTypeReturnsFalseOnInvalidInput(): void
+    {
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+
+        $result = $treeWalker->getdiff(42, array('a' => 1), false);
+
+        $this->assertEquals("the parameter is not a valid structure", $result);
+    }
+
+    public function testInvalidReturntype(): void
+    {
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "invalid"));
+
+        $result = $treeWalker->getdiff(array('a' => 1), array('a' => 2), false);
+
+        $this->assertEquals("returntype is not valid!", $result);
+    }
+
+    public function testGetDynamicallyValueKeyNotFound(): void
+    {
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+
+        $struct = array('a' => array('b' => 1));
+        $result = $treeWalker->getDynamicallyValue($struct, array('a', 'nonexistent'));
+
+        $this->assertStringContainsString('error', $result);
+    }
+
+    public function testSetDynamicallyValueKeyNotFound(): void
+    {
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+
+        $struct = array('a' => array('b' => 1));
+        $result = $treeWalker->setDynamicallyValue($struct, array('nonexistent', 'b'), 99);
+
+        $this->assertEquals(array('a' => array('b' => 1)), $result);
+    }
+
+    public function testGetdiffWithNonEmptyNestedObject(): void
+    {
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+
+        $obj1 = new stdClass();
+        $obj1->x = 1;
+        $obj2 = new stdClass();
+        $obj2->x = 2;
+
+        $result = $treeWalker->getdiff(array('a' => $obj1), array('a' => $obj2), false);
+
+        $this->assertArrayHasKey('a/x', $result['edited']);
+    }
+
+    public function testGetdiffWithEmptyNestedObject(): void
+    {
+        $treeWalker = new TreeWalker(array("debug" => false, "returntype" => "array"));
+
+        $result = $treeWalker->getdiff(array('a' => new stdClass()), array('a' => new stdClass()), false);
+
+        $this->assertEquals(array(), $result['new']);
+        $this->assertEquals(array(), $result['removed']);
+        $this->assertEquals(array(), $result['edited']);
     }
 }
