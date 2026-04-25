@@ -31,9 +31,9 @@ class TreeWalker
         "returntype" => "jsonstring"
     );
 
-    private $typetowork = "array";
-    private $time_start = 0;
-    private $time_end = 0;
+    private $typeToWork = "array";
+    private $timeStart = 0;
+    private $timeEnd = 0;
 
     /**
      * @param array $config
@@ -47,99 +47,99 @@ class TreeWalker
 
     /**
      * @param  \stdClass|string|array $struct
-     * @param  array                  $keypath_array
+     * @param  array                  $keypathArray
      * @return \stdClass|string|array
      */
-    public function getDynamicallyValue($struct, $keypath_array)
+    public function getDynamicallyValue($struct, $keypathArray)
     {
         if (!$this->studyType($struct, $problem)) {
             return $problem;
         }
 
-        $getDynamically = function ($struct_assocarray, $keypath_array) use (&$getDynamically) {
-            if (empty($keypath_array)) {
-                return $struct_assocarray;
+        $getDynamically = function ($structAssocarray, $keypathArray) use (&$getDynamically) {
+            if (empty($keypathArray)) {
+                return $structAssocarray;
             }
 
-            $key = array_shift($keypath_array);
+            $key = array_shift($keypathArray);
 
-            if (is_array($struct_assocarray)) {
-                if (array_key_exists($key, $struct_assocarray)) {
-                    return $getDynamically($struct_assocarray[$key], $keypath_array);
+            if (is_array($structAssocarray)) {
+                if (array_key_exists($key, $structAssocarray)) {
+                    return $getDynamically($structAssocarray[$key], $keypathArray);
                 } else {
                     return '{"error": "Error, some key does not exist!"}';
                 }
             }
         };
 
-        $value = $getDynamically($struct, $keypath_array);
+        $value = $getDynamically($struct, $keypathArray);
 
         return $this->returnTypeConvert($value);
     }
 
     /**
      * @param  \stdClass|string|array $struct
-     * @param  array                  $keypath_array
+     * @param  array                  $keypathArray
      * @param  mixed                  $value
      * @return \stdClass|string|array
      */
-    public function setDynamicallyValue($struct, $keypath_array, $value = "")
+    public function setDynamicallyValue($struct, $keypathArray, $value = "")
     {
         if (!$this->studyType($struct, $problem)) {
             return $problem;
         }
 
-        $setDynamically = function (&$struct_assocarray, $keypath_array, $value) use (&$setDynamically) {
-            if (count($keypath_array) === 1) {
-                $struct_assocarray[$keypath_array[0]] = $value;
+        $setDynamically = function (&$structAssocarray, $keypathArray, $value) use (&$setDynamically) {
+            if (count($keypathArray) === 1) {
+                $structAssocarray[$keypathArray[0]] = $value;
                 return;
             }
 
-            $key = array_shift($keypath_array);
+            $key = array_shift($keypathArray);
 
-            if (is_array($struct_assocarray)) {
-                if (array_key_exists($key, $struct_assocarray)) {
-                    return $setDynamically($struct_assocarray[$key], $keypath_array, $value);
+            if (is_array($structAssocarray)) {
+                if (array_key_exists($key, $structAssocarray)) {
+                    return $setDynamically($structAssocarray[$key], $keypathArray, $value);
                 } else {
                     return '{"error": "Error, some key does not exist!"}';
                 }
             }
         };
 
-        $setDynamically($struct, $keypath_array, $value);
+        $setDynamically($struct, $keypathArray, $value);
 
         return $this->returnTypeConvert($struct);
     }
 
     /**
      * @param  array|string|\stdClass $struct
-     * @param  array                  $keypath_array
+     * @param  array                  $keypathArray
      * @return array|string|\stdClass
      */
-    public function createDynamicallyObjects($struct, $keypath_array)
+    public function createDynamicallyObjects($struct, $keypathArray)
     {
         if (!$this->studyType($struct, $problem)) {
             return $problem;
         }
 
-        $path_string = "";
+        $pathString = "";
 
-        for ($i = 0; $i < count($keypath_array); $i++) {
-            $key = $keypath_array[$i];
-            $path_string .= $key . "/";
+        for ($i = 0; $i < count($keypathArray); $i++) {
+            $key = $keypathArray[$i];
+            $pathString .= $key . "/";
         }
 
-        $this->accessDynamically($path_string, $struct);
+        $this->accessDynamically($pathString, $struct);
         return $this->returnTypeConvert($struct);
     }
 
     /**
-     * @param string $path_string
+     * @param string $pathString
      * @param array  $array
      */
-    private function accessDynamically($path_string, &$array)
+    private function accessDynamically($pathString, &$array)
     {
-        $keys = explode('/', substr_replace($path_string, "", -1));
+        $keys = explode('/', substr_replace($pathString, "", -1));
         $ref = &$array;
 
         foreach ($keys as $key => $value) {
@@ -175,13 +175,13 @@ class TreeWalker
             return $struct;
         };
 
-        $replaced_array = $replaceWalker($struct, $callback);
+        $replacedArray = $replaceWalker($struct, $callback);
 
         if ($this->config["debug"]) {
-            $replaced_array["time"] = $this->clockMark();
+            $replacedArray["time"] = $this->clockMark();
         }
 
-        return $this->returnTypeConvert($replaced_array);
+        return $this->returnTypeConvert($replacedArray);
     }
 
     /**
@@ -198,37 +198,37 @@ class TreeWalker
 
         $this->clockStart();
 
-        $structpath1_array = array();
-        $structpath2_array = array();
+        $structPath1Array = array();
+        $structPath2Array = array();
 
-        $this->structPathArray($struct1, $structpath1_array, "");
-        $this->structPathArray($struct2, $structpath2_array, "");
-        $deltadiff_array = $this->structPathArrayDiff($structpath1_array, $structpath2_array, $slashtoobject);
+        $this->structPathArray($struct1, $structPath1Array, "");
+        $this->structPathArray($struct2, $structPath2Array, "");
+        $deltaDiffArray = $this->structPathArrayDiff($structPath1Array, $structPath2Array, $slashtoobject);
 
         if ($this->config["debug"]) {
-            $deltadiff_array["time"] = $this->clockMark();
+            $deltaDiffArray["time"] = $this->clockMark();
         }
 
-        return $this->returnTypeConvert($deltadiff_array);
+        return $this->returnTypeConvert($deltaDiffArray);
     }
 
     /**
-     * @param array  $assocarray
+     * @param array  $assocArray
      * @param array  &$array
-     * @param string $currentpath
+     * @param string $currentPath
      */
-    private function structPathArray($assocarray, &$array, $currentpath)
+    private function structPathArray($assocArray, &$array, $currentPath)
     {
-        if (is_array($assocarray)) {
-            foreach ($assocarray as $key => $value) {
-                if (array_key_exists($key, $assocarray)) {
-                    $path = $currentpath !== '' ? $currentpath . "/" . $key : sprintf($key);
+        if (is_array($assocArray)) {
+            foreach ($assocArray as $key => $value) {
+                if (array_key_exists($key, $assocArray)) {
+                    $path = $currentPath !== '' ? $currentPath . "/" . $key : sprintf($key);
 
-                    if (gettype($assocarray[$key]) == "array" && !empty($assocarray[$key])) {
-                        $this->structPathArray($assocarray[$key], $array, $path);
-                    } elseif (gettype($assocarray[$key]) == "object") {
-                        if (!empty((array)$assocarray[$key])) {
-                            $this->structPathArray((array)$assocarray[$key], $array, $path);
+                    if (gettype($assocArray[$key]) == "array" && !empty($assocArray[$key])) {
+                        $this->structPathArray($assocArray[$key], $array, $path);
+                    } elseif (gettype($assocArray[$key]) == "object") {
+                        if (!empty((array)$assocArray[$key])) {
+                            $this->structPathArray((array)$assocArray[$key], $array, $path);
                         } else {
                             $array[$path] = array();
                         }
@@ -256,102 +256,102 @@ class TreeWalker
 
         $this->clockStart();
 
-        $structpath1_array = array();
-        $structpath2_array = array();
+        $structPath1Array = array();
+        $structPath2Array = array();
 
-        $this->structPathArray($struct1, $structpath1_array, "");
-        $this->structPathArray($struct2, $structpath2_array, "");
-        $merged_array = array_merge($structpath2_array, $structpath1_array);
+        $this->structPathArray($struct1, $structPath1Array, "");
+        $this->structPathArray($struct2, $structPath2Array, "");
+        $mergedArray = array_merge($structPath2Array, $structPath1Array);
 
         if ($this->config["debug"]) {
-            $merged_array["time"] = $this->clockMark();
+            $mergedArray["time"] = $this->clockMark();
         }
 
         if ($slashtoobject) {
-            $merged_array = $this->pathSlashToStruct($merged_array);
+            $mergedArray = $this->pathSlashToStruct($mergedArray);
         }
 
-        return $this->returnTypeConvert($merged_array);
+        return $this->returnTypeConvert($mergedArray);
     }
 
     /**
-     * @param  array $assocarray
+     * @param  array $assocArray
      * @return array
      */
-    private function pathSlashToStruct($assocarray)
+    private function pathSlashToStruct($assocArray)
     {
-        $new_assocarray = [];
+        $newAssocArray = [];
 
         $this->switchType();
 
-        if (is_array($assocarray)) {
-            foreach ($assocarray as $key => $value) {
+        if (is_array($assocArray)) {
+            foreach ($assocArray as $key => $value) {
                 if (strpos($key, '/') !== false) {
                     $aux = explode("/", $key);
-                    $newkey = $aux[0];
+                    $newKey = $aux[0];
                     array_shift($aux);
 
-                    if (isset($new_assocarray[$newkey])) {
-                        $new_assocarray[$newkey] = $this->createDynamicallyObjects($new_assocarray[$newkey], $aux);
-                        $new_assocarray[$newkey] = $this->setDynamicallyValue($new_assocarray[$newkey], $aux, $value);
+                    if (isset($newAssocArray[$newKey])) {
+                        $newAssocArray[$newKey] = $this->createDynamicallyObjects($newAssocArray[$newKey], $aux);
+                        $newAssocArray[$newKey] = $this->setDynamicallyValue($newAssocArray[$newKey], $aux, $value);
                     } else {
-                        $new_assocarray[$newkey] = $this->createDynamicallyObjects(array(), $aux);
-                        $new_assocarray[$newkey] = $this->setDynamicallyValue($new_assocarray[$newkey], $aux, $value);
+                        $newAssocArray[$newKey] = $this->createDynamicallyObjects(array(), $aux);
+                        $newAssocArray[$newKey] = $this->setDynamicallyValue($newAssocArray[$newKey], $aux, $value);
                     }
                 } else {
-                    $new_assocarray[$key] = $value;
+                    $newAssocArray[$key] = $value;
                 }
             }
         }
 
         $this->switchType();
 
-        return $new_assocarray;
+        return $newAssocArray;
     }
 
     /**
-     * @param  array $structpath1_array
-     * @param  array $structpath2_array
+     * @param  array $structPath1Array
+     * @param  array $structPath2Array
      * @param  bool  $slashtoobject
      * @return array
      */
-    private function structPathArrayDiff($structpath1_array, $structpath2_array, $slashtoobject)
+    private function structPathArrayDiff($structPath1Array, $structPath2Array, $slashtoobject)
     {
-        $deltadiff_array = array(
+        $deltaDiffArray = array(
             "new"     => array(),
             "removed" => array(),
             "edited"  => array()
         );
 
-        foreach ($structpath1_array as $key1 => $value1) {
-            if (array_key_exists($key1, $structpath2_array)) {
-                if ($value1 !== $structpath2_array[$key1]) {
+        foreach ($structPath1Array as $key1 => $value1) {
+            if (array_key_exists($key1, $structPath2Array)) {
+                if ($value1 !== $structPath2Array[$key1]) {
                     $edited = array(
-                        "oldvalue" => $structpath2_array[$key1],
+                        "oldvalue" => $structPath2Array[$key1],
                         "newvalue" => $value1
                     );
-                    $deltadiff_array["edited"][$key1] = $edited;
+                    $deltaDiffArray["edited"][$key1] = $edited;
                 }
             } else {
-                $deltadiff_array["new"][$key1] = $value1;
+                $deltaDiffArray["new"][$key1] = $value1;
             }
         }
 
-        $removido = array_diff_key($structpath2_array, $structpath1_array);
+        $removido = array_diff_key($structPath2Array, $structPath1Array);
 
         if (!empty($removido)) {
             foreach ($removido as $key => $value) {
-                $deltadiff_array["removed"][$key] = $value;
+                $deltaDiffArray["removed"][$key] = $value;
             }
         }
 
         if ($slashtoobject) {
-            foreach ($deltadiff_array as $key => &$value) {
+            foreach ($deltaDiffArray as $key => &$value) {
                 $value = $this->pathSlashToStruct($value);
             }
         }
 
-        return $deltadiff_array;
+        return $deltaDiffArray;
     }
 
     /**
@@ -417,7 +417,7 @@ class TreeWalker
 
     private function clockStart()
     {
-        $this->time_start = round(microtime(true) * 1000);
+        $this->timeStart = round(microtime(true) * 1000);
     }
 
     /**
@@ -425,13 +425,13 @@ class TreeWalker
      */
     private function clockMark()
     {
-        return round(microtime(true) * 1000) - $this->time_start . " milliseconds";
+        return round(microtime(true) * 1000) - $this->timeStart . " milliseconds";
     }
 
     private function switchType()
     {
         $aux = $this->config["returntype"];
-        $this->config["returntype"] = $this->typetowork;
-        $this->typetowork = $aux;
+        $this->config["returntype"] = $this->typeToWork;
+        $this->typeToWork = $aux;
     }
 }
