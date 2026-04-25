@@ -57,14 +57,14 @@ echo "<br/><br/>\n\n";
 
 // getDynamicallyValue(struct, path)
 echo "getDynamicallyValue(struct, path)<br/>\n";
-$dynamicpath = array("cafeina", "ss");
-print_r($treewalker->getDynamicallyValue($struct4, $dynamicpath));
+$dynamicPath = array("cafeina", "ss");
+print_r($treewalker->getDynamicallyValue($struct4, $dynamicPath));
 echo "<br/>\n\n";
 
 // setDynamicallyValue(struct, path, value)
 echo "setDynamicallyValue(struct, path, value)<br/>\n";
-$dynamicpath = array("cafeina", "ss");
-print_r($treewalker->setDynamicallyValue($struct4, $dynamicpath, "newvalue"));
+$dynamicPath = array("cafeina", "ss");
+print_r($treewalker->setDynamicallyValue($struct4, $dynamicPath, "newvalue"));
 echo "<br/>\n\n";
 
 // structMerge(struct1, struct2, slashtostruct)
