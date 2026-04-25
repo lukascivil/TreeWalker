@@ -42,5 +42,10 @@
     "phpunit/phpunit": "^10",
     "friendsofphp/php-cs-fixer": "^3.95",
     "squizlabs/php_codesniffer": "^4.0"
+  },
+  "config": {
+    "platform": {
+      "php": "8.1"
+    }
   }
 }
