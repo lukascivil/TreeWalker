@@ -10,7 +10,7 @@ jobs:
         php-version: ["8.1", "8.5"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup PHP with Xdebug
         uses: shivammathur/setup-php@v2
@@ -28,8 +28,8 @@ jobs:
         run: composer run-script test
 
       - name: Upload coverage to Codecov
-        if: matrix.php-version == '8.3'
-        uses: codecov/codecov-action@v4
+        if: matrix.php-version == '8.5'
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
